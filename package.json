@@ -4,6 +4,9 @@
   "description": "Vibsio — a digital venture studio building atomic utilities for the modern web.",
   "type": "module",
   "scripts": {
+    "sitemap": "node scripts/generate-sitemap.mjs",
+    "prebuild": "node scripts/generate-sitemap.mjs",
+    "predev": "node scripts/generate-sitemap.mjs",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",

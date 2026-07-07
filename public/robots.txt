@@ -1,0 +1,8 @@
+# robots.txt — vibs.io
+# The studio landing page is 100% static and fully open for crawling.
+
+User-agent: *
+Allow: /
+
+# Fully-qualified sitemap for direct GSC / Bing Webmaster discovery.
+Sitemap: https://vibs.io/sitemap.xml
