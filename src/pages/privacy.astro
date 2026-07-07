@@ -1,0 +1,56 @@
+---
+/**
+ * privacy.astro — placeholder Privacy Policy page.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import { SITE } from '../data/network';
+---
+
+<BaseLayout
+  title={`Privacy Policy — ${SITE.name}`}
+  description={`Privacy Policy for ${SITE.legalName} and the vibs.io network of properties.`}
+>
+  <SiteHeader />
+  <main class="mx-auto max-w-3xl px-6 py-24">
+    <a href="/" class="text-sm text-indigo-400 transition hover:text-indigo-300">
+      ← Back to studio
+    </a>
+    <h1 class="mt-6 text-4xl font-semibold tracking-tight text-white">
+      Privacy Policy
+    </h1>
+    <p class="mt-4 text-slate-400">
+      This is a placeholder. Our formal privacy policy describing what data the
+      vibs.io network collects and how it is handled will be published here.
+    </p>
+
+    <div class="mt-10 space-y-6 text-sm leading-relaxed text-slate-400">
+      <section>
+        <h2 class="text-lg font-semibold text-white">Data we collect</h2>
+        <p class="mt-2">
+          vibs.io properties are built privacy-first. Details of any analytics or
+          data collection will be enumerated here.
+        </p>
+      </section>
+      <section>
+        <h2 class="text-lg font-semibold text-white">Your rights</h2>
+        <p class="mt-2">
+          You may request access to or deletion of any personal data associated
+          with your use of our tools.
+        </p>
+      </section>
+      <section>
+        <h2 class="text-lg font-semibold text-white">Contact</h2>
+        <p class="mt-2">
+          Privacy questions? Email
+          <a
+            href="mailto:hello@vibs.io"
+            class="text-indigo-400 transition hover:text-indigo-300"
+          >hello@vibs.io</a>.
+        </p>
+      </section>
+    </div>
+  </main>
+  <SiteFooter />
+</BaseLayout>

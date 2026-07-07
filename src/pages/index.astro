@@ -1,0 +1,23 @@
+---
+/**
+ * index.astro — the vibs.io flagship landing page.
+ * Composes the studio sections; all content is data-driven from
+ * src/data/network.ts.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import Hero from '../components/Hero.astro';
+import NetworkGrid from '../components/NetworkGrid.astro';
+import Philosophy from '../components/Philosophy.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+---
+
+<BaseLayout>
+  <SiteHeader />
+  <main>
+    <Hero />
+    <NetworkGrid />
+    <Philosophy />
+  </main>
+  <SiteFooter />
+</BaseLayout>

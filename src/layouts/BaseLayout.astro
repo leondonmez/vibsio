@@ -1,0 +1,90 @@
+---
+/**
+ * BaseLayout.astro — global HTML shell + SEO.
+ * Emits title/description/viewport, canonical URL, OpenGraph + Twitter cards,
+ * and Organization JSON-LD derived from the network data. Per-page overrides
+ * come in via props.
+ */
+import { SITE } from '../data/network';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  keywords?: readonly string[];
+  canonicalPath?: string | null;
+  noindex?: boolean;
+}
+
+const {
+  title = SITE.title,
+  description = SITE.description,
+  keywords = SITE.keywords,
+  canonicalPath = null,
+  noindex = false,
+} = Astro.props;
+
+// Self-referencing canonical, normalized to the no-trailing-slash form.
+const pagePath =
+  (canonicalPath ?? Astro.url.pathname).replace(/\/+$/, '') || '/';
+const canonicalUrl = `${SITE.domain}${pagePath}`;
+const ogImageUrl = `${SITE.domain}${SITE.ogImage}`;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: SITE.name,
+  legalName: SITE.legalName,
+  url: SITE.domain,
+  description: SITE.description,
+  slogan: SITE.tagline,
+};
+---
+
+<!doctype html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {keywords.length > 0 && (
+      <meta name="keywords" content={keywords.join(', ')} />
+    )}
+    <link rel="canonical" href={canonicalUrl} />
+    {noindex ? (
+      <meta name="robots" content="noindex, nofollow" />
+    ) : (
+      <meta name="robots" content="index, follow" />
+    )}
+
+    <meta name="theme-color" content="#020617" />
+    <meta name="color-scheme" content="dark" />
+
+    {/* OpenGraph */}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+
+    {/* Twitter */}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(jsonLd)}
+    />
+  </head>
+  <body class="min-h-full antialiased">
+    <slot />
+  </body>
+</html>
