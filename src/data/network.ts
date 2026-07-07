@@ -49,6 +49,14 @@ export const NETWORK: NetworkSite[] = [
     glyph: '{ } ↯',
     status: 'live',
   },
+  {
+    name: 'Flexr',
+    url: 'https://flexr.dev',
+    description: 'CSS Flexbox & Grid layout laboratory.',
+    tag: 'CSS Layout',
+    glyph: '⧉',
+    status: 'live',
+  },
 ];
 
 /**
