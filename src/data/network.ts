@@ -67,9 +67,11 @@ export const SITE = {
   legalName: 'Vibsio LLC',
   domain: 'https://vibs.io',
   tagline: 'A digital venture studio for the modern web.',
-  title: 'vibs.io — Atomic utilities for the modern web',
+  // Title kept under 60 chars; branded "vibs.io" per house style (not "Vibsio").
+  title: 'vibs.io | Digital Product Studio & Micro-SaaS Foundry',
+  // Meta description kept under 155 chars for full SERP display.
   description:
-    'vibs.io is a digital venture studio and micro-SaaS holding company building a network of hyper-focused, single-purpose utility tools — shipped at the speed of thought.',
+    'vibs.io is an independent digital venture studio and portfolio engine building high-utility web apps — sleek, single-purpose tools shipped fast.',
   keywords: [
     'digital venture studio',
     'micro-saas',
@@ -78,7 +80,7 @@ export const SITE = {
     'indie software studio',
     'vibs.io',
   ],
-  ogImage: '/og.png',
+  ogImage: '/og-image.png',
 } as const;
 
 /** Studio operating thesis, rendered in the Philosophy section. */
