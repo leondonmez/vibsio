@@ -20,6 +20,8 @@ import {
   getAuthProfile,
   signInWithGoogle,
   signOut,
+  captureAuthCallback,
+  ensureFreshSession,
 } from "./auth.js";
 import {
   currentSessionId,
@@ -367,6 +369,14 @@ function renderAuthIndicator() {
     label.textContent = `${profile?.name ?? "Signed in"} · Premium`;
     wrap.title = "Premium — enterprise features unlocked.";
   }
+  if (profile?.avatar) {
+    const img = document.createElement("img");
+    img.src = profile.avatar;
+    img.alt = "";
+    img.referrerPolicy = "no-referrer";
+    img.className = "h-4.5 w-4.5 shrink-0 rounded-full";
+    wrap.append(img);
+  }
   wrap.append(dot, label);
 
   const signinBtn = $("#auth-signin-btn");
@@ -439,7 +449,6 @@ function toast(message) {
 }
 
 function initSyncStatus() {
-  document.addEventListener("vibsio:toast", (e) => toast(e.detail.message));
   document.addEventListener("vibsio:synced", (e) => {
     const s = getState();
     upsertWorkspace({
@@ -465,6 +474,14 @@ function initSyncStatus() {
 
 async function boot() {
   initTheme();
+  // Toast listener first — auth callback capture below emits toasts.
+  document.addEventListener("vibsio:toast", (e) => toast(e.detail.message));
+
+  // OAuth callback tokens arrive in the URL hash — the same slot the state
+  // engine owns. Capture + strip them BEFORE hydrate() reads the hash; the
+  // workspace then restores from its localStorage recovery copy.
+  await captureAuthCallback();
+  await ensureFreshSession();
 
   const source = await hydrate();
   const s = getState();

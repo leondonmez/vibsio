@@ -18,7 +18,7 @@ import {
   seniorityLabel,
   tagLabel,
 } from "../utils/clipboardPackager.js";
-import { AUTH_STATES, getAuthState } from "./auth.js";
+import { AUTH_STATES, getAuthState, getAccessToken } from "./auth.js";
 
 const $ = (sel) => document.querySelector(sel);
 const CLOUD_ENDPOINT = "/api/blueprint";
@@ -218,9 +218,13 @@ function synthesizeBlueprint({ epic, stack, seniority, syntax }) {
 /* ================================================================ */
 
 async function cloudGenerate(payload) {
+  const token = getAccessToken();
   const res = await fetch(CLOUD_ENDPOINT, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     body: JSON.stringify(payload),
   });
   if (!res.ok || !res.body) throw new Error(`endpoint returned ${res.status}`);
