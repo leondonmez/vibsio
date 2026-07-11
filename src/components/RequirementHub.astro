@@ -1,0 +1,95 @@
+---
+/**
+ * LAYER 3 — Epic Decomposer intake + chameleon controls.
+ * Every control binds continuously into state.r (URL hash) via blueprint.js.
+ */
+---
+
+<section
+  aria-labelledby="requirement-hub-heading"
+  class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
+>
+  <div class="mb-4">
+    <h2 id="requirement-hub-heading" class="flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
+      <span aria-hidden="true">✨</span> Requirement Blueprint Engine
+    </h2>
+    <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+      Paste a sprawling concept; get a segmented, seniority-calibrated task blueprint.
+    </p>
+  </div>
+
+  <!-- Header control panel -->
+  <div class="mb-4 grid gap-4 lg:grid-cols-3">
+    <div>
+      <label for="stack-select" class="mb-1.5 block text-xs font-medium text-slate-600 dark:text-slate-400">
+        Architectural Stack Match
+      </label>
+      <select
+        id="stack-select"
+        class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950"
+      >
+        <option value="nextjs-supabase">Next.js + Supabase</option>
+        <option value="django-postgres">Django + PostgreSQL</option>
+        <option value="laravel-livewire">Laravel + Livewire</option>
+        <option value="astro-tailwind">Astro + Tailwind</option>
+        <option value="spring-mysql">Spring Boot + MySQL</option>
+      </select>
+    </div>
+
+    <div>
+      <span id="seniority-label" class="mb-1.5 block text-xs font-medium text-slate-600 dark:text-slate-400">
+        Team Seniority Nuance Modulator
+      </span>
+      <div
+        id="seniority-group"
+        role="group"
+        aria-labelledby="seniority-label"
+        class="grid grid-cols-3 rounded-lg border border-slate-300 p-0.5 dark:border-slate-700"
+      >
+        <button type="button" data-value="junior" aria-pressed="false" class="rounded-md px-2 py-1.5 text-xs font-medium transition">Junior Developer</button>
+        <button type="button" data-value="mid" aria-pressed="false" class="rounded-md px-2 py-1.5 text-xs font-medium transition">Mid-Level Engineer</button>
+        <button type="button" data-value="senior" aria-pressed="false" class="rounded-md px-2 py-1.5 text-xs font-medium transition">Senior Technical Lead</button>
+      </div>
+    </div>
+
+    <div>
+      <span id="syntax-label" class="mb-1.5 block text-xs font-medium text-slate-600 dark:text-slate-400">
+        Acceptance Criteria Syntax
+      </span>
+      <div
+        id="syntax-group"
+        role="group"
+        aria-labelledby="syntax-label"
+        class="grid grid-cols-2 rounded-lg border border-slate-300 p-0.5 dark:border-slate-700"
+      >
+        <button type="button" data-value="checklist" aria-pressed="false" class="rounded-md px-2 py-1.5 text-xs font-medium transition">Functional Checklist</button>
+        <button type="button" data-value="bdd" aria-pressed="false" class="rounded-md px-2 py-1.5 text-xs font-medium transition">BDD Given-When-Then</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Intake box -->
+  <label for="epic-input" class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+    Sprawling Epic / Feature Raw Concept
+  </label>
+  <textarea
+    id="epic-input"
+    rows="5"
+    maxlength="4000"
+    placeholder="Dump the whole messy idea here — user flows, edge cases, half-formed constraints. The engine untangles it; the PII filter scrubs secrets before anything is packaged."
+    class="w-full resize-y rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-base leading-relaxed dark:border-slate-700 dark:bg-slate-950"
+  ></textarea>
+
+  <div class="mt-3 flex flex-wrap items-center justify-between gap-3">
+    <p class="text-xs text-slate-400 dark:text-slate-500">
+      Client-side PII filter scrubs IPs, keys, tokens &amp; emails before payload compile.
+    </p>
+    <button
+      id="generate-btn"
+      type="button"
+      class="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500"
+    >
+      ⚡ Generate Blueprint
+    </button>
+  </div>
+</section>

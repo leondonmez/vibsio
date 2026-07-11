@@ -31,6 +31,7 @@ import {
   rotateSessionId,
 } from "./workspaces.js";
 import { initForecast, refreshForecastUi } from "./forecast.js";
+import { initBlueprint, refreshBlueprintUi } from "./blueprint.js";
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -318,6 +319,7 @@ async function loadWorkspace(entry) {
   renderMetrics();
   renderSidebar();
   refreshForecastUi();
+  refreshBlueprintUi();
 }
 
 function initSidebarActions() {
@@ -331,6 +333,7 @@ function initSidebarActions() {
     renderMetrics();
     renderSidebar();
     refreshForecastUi();
+    refreshBlueprintUi();
     $("#session-name")?.focus();
   });
 }
@@ -478,6 +481,7 @@ async function boot() {
   renderAuthIndicator();
   initSyncStatus();
   initForecast();
+  initBlueprint();
 
   if (source === "recovered") {
     toast("Previous session recovered from this browser — no account needed.");
@@ -497,6 +501,7 @@ async function boot() {
     renderMetrics();
     renderSidebar();
     refreshForecastUi();
+    refreshBlueprintUi();
   });
 }
 

@@ -6,6 +6,10 @@ import AuthGateModal from "../components/AuthGateModal.astro";
 import VelocityGrid from "../components/VelocityGrid.astro";
 import ForecastControls from "../components/ForecastControls.astro";
 import BurnupChart from "../components/BurnupChart.astro";
+import RequirementHub from "../components/RequirementHub.astro";
+import GenerationTerminal from "../components/GenerationTerminal.astro";
+import BlueprintGrid from "../components/BlueprintGrid.astro";
+import IntegrationDrawer from "../components/IntegrationDrawer.astro";
 ---
 
 <BaseLayout>
@@ -189,30 +193,10 @@ import BurnupChart from "../components/BurnupChart.astro";
         </div>
         <BurnupChart />
 
-        <!-- Protected AI module -->
-        <section
-          aria-labelledby="ai-heading"
-          class="rounded-xl border border-indigo-200 bg-gradient-to-br from-indigo-50 to-white p-5 shadow-sm sm:p-6 dark:border-indigo-900 dark:from-indigo-950/40 dark:to-slate-900"
-        >
-          <div class="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-            <div>
-              <h2 id="ai-heading" class="flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
-                <span aria-hidden="true">✨</span> AI Blueprint Assistant
-              </h2>
-              <p class="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
-                Generate a full <span data-term="backlog">Product Backlog</span> from your objective —
-                estimated, prioritized, and ready to plan. Requires sign-in.
-              </p>
-            </div>
-            <button
-              type="button"
-              data-requires-auth
-              class="shrink-0 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500"
-            >
-              Generate with AI
-            </button>
-          </div>
-        </section>
+        <!-- Layer 3: Qualitative Requirement Blueprint Engine -->
+        <RequirementHub />
+        <GenerationTerminal />
+        <BlueprintGrid />
       </main>
     </div>
   </div>
@@ -224,6 +208,7 @@ import BurnupChart from "../components/BurnupChart.astro";
   </footer>
 
   <AuthGateModal />
+  <IntegrationDrawer />
 
   <script>
     import "../scripts/app.js";

@@ -1,0 +1,34 @@
+---
+/**
+ * LAYER 3 — Real-time streaming generation terminal.
+ * Hidden until the first run; blueprint.js types log + task lines into it
+ * with a blinking caret while the engine streams.
+ */
+---
+
+<section
+  id="generation-terminal"
+  aria-label="Generation terminal"
+  class="hidden overflow-hidden rounded-xl border border-slate-800 bg-slate-950 shadow-sm"
+>
+  <div class="flex items-center justify-between border-b border-slate-800 px-4 py-2.5">
+    <div class="flex items-center gap-2">
+      <span class="flex gap-1.5" aria-hidden="true">
+        <span class="h-2.5 w-2.5 rounded-full bg-rose-500"></span>
+        <span class="h-2.5 w-2.5 rounded-full bg-amber-400"></span>
+        <span class="h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+      </span>
+      <span class="font-mono text-xs text-slate-400">vibsio · blueprint-engine</span>
+    </div>
+    <span id="terminal-status" class="text-[11px] font-medium text-slate-500">idle</span>
+  </div>
+  <div
+    id="terminal-output"
+    role="log"
+    aria-live="polite"
+    class="max-h-72 overflow-y-auto px-4 py-3 font-mono text-xs leading-relaxed"
+  ></div>
+  <div class="px-4 pb-3">
+    <span id="terminal-caret" class="terminal-caret hidden font-mono text-xs text-emerald-400" aria-hidden="true">▋</span>
+  </div>
+</section>

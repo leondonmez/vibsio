@@ -27,7 +27,28 @@ export const DEFAULT_STATE = Object.freeze({
   // f.hist: [period, velocity] pairs · f.backlog: remaining points
   // f.target: optional YYYY-MM-DD · f.creep: scope-creep % (0–100)
   f: { hist: [], backlog: 0, target: "", creep: 0 },
+  // Layer 3 — Qualitative Requirement Blueprint Engine
+  // r.epic: raw concept text · r.stack/seniority/syntax: generation params
+  // r.tasks: generated + hand-edited blueprint (core/cross tracks)
+  r: {
+    epic: "",
+    stack: "nextjs-supabase",
+    seniority: "mid",
+    syntax: "checklist",
+    tasks: { core: [], cross: [] },
+  },
 });
+
+export const STACK_KEYS = [
+  "nextjs-supabase",
+  "django-postgres",
+  "laravel-livewire",
+  "astro-tailwind",
+  "spring-mysql",
+];
+export const SENIORITY_KEYS = ["junior", "mid", "senior"];
+export const SYNTAX_KEYS = ["checklist", "bdd"];
+export const TASK_TAGS = ["eng", "qa", "devops", "ux"];
 
 let state = structuredClone(DEFAULT_STATE);
 const listeners = new Set();
@@ -171,7 +192,29 @@ function normalize(obj) {
         ? Math.max(0, Math.min(100, Math.round(Number(obj.f.creep))))
         : 0,
     },
+    r: {
+      epic: String(obj.r?.epic ?? "").slice(0, 4000),
+      stack: STACK_KEYS.includes(obj.r?.stack) ? obj.r.stack : "nextjs-supabase",
+      seniority: SENIORITY_KEYS.includes(obj.r?.seniority) ? obj.r.seniority : "mid",
+      syntax: SYNTAX_KEYS.includes(obj.r?.syntax) ? obj.r.syntax : "checklist",
+      tasks: {
+        core: normalizeTasks(obj.r?.tasks?.core),
+        cross: normalizeTasks(obj.r?.tasks?.cross),
+      },
+    },
   };
+}
+
+function normalizeTasks(list) {
+  if (!Array.isArray(list)) return [];
+  return list
+    .filter((t) => t !== null && typeof t === "object" && typeof t.t === "string" && t.t.length)
+    .slice(0, 60)
+    .map((t) => ({
+      id: typeof t.id === "string" ? t.id : crypto.randomUUID(),
+      t: t.t.slice(0, 600),
+      ...(TASK_TAGS.includes(t.tag) ? { tag: t.tag } : {}),
+    }));
 }
 
 /* ---------------------------------------------------------------- */

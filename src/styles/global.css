@@ -28,3 +28,12 @@
     outline-offset: 2px;
   }
 }
+
+/* Streaming terminal caret */
+@keyframes caret-blink {
+  0%, 55% { opacity: 1; }
+  56%, 100% { opacity: 0; }
+}
+.terminal-caret {
+  animation: caret-blink 0.9s steps(1) infinite;
+}
