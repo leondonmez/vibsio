@@ -1,0 +1,99 @@
+---
+/**
+ * Global header: brand, Multi-Methodology Engine selector, 3-state auth
+ * indicator, sign-in trigger, and the light/dark theme toggle.
+ */
+---
+
+<header
+  class="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur dark:border-slate-800 dark:bg-slate-950/80"
+>
+  <div class="mx-auto flex h-14 max-w-7xl items-center gap-3 px-4 sm:gap-4 sm:px-6">
+    <a href="/" class="flex items-center gap-2" aria-label="vibs.io home">
+      <span
+        class="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-sm font-bold text-white"
+        aria-hidden="true">v</span
+      >
+      <span class="text-sm font-semibold tracking-tight sm:text-base">vibs.io</span>
+      <span
+        class="hidden rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500 sm:inline dark:bg-slate-800 dark:text-slate-400"
+        >Planning Sandbox</span
+      >
+    </a>
+
+    <!-- Multi-Methodology Engine -->
+    <div class="ml-auto flex items-center gap-2 sm:gap-3">
+      <label for="methodology-select" class="sr-only">Multi-Methodology Engine</label>
+      <select
+        id="methodology-select"
+        class="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-sm sm:text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+        title="Multi-Methodology Engine — re-labels the whole workspace"
+      >
+        <option value="scrum">Scrum</option>
+        <option value="kanban">Kanban</option>
+        <option value="pmo">Traditional PMO</option>
+      </select>
+
+      <!-- 3-state auth indicator (populated by app.js) -->
+      <span
+        id="auth-indicator"
+        class="hidden max-w-44 items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 sm:flex dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
+      ></span>
+
+      <button
+        id="auth-signin-btn"
+        type="button"
+        class="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-500 sm:text-sm"
+      >
+        Sign in
+      </button>
+      <button
+        id="auth-signout-btn"
+        type="button"
+        class="hidden rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-100 sm:text-sm dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+      >
+        Sign out
+      </button>
+
+      <!-- Theme toggle -->
+      <button
+        id="theme-toggle"
+        type="button"
+        aria-pressed="false"
+        aria-label="Toggle dark mode"
+        class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+      >
+        <svg
+          id="theme-icon-moon"
+          class="hidden h-4 w-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+          ></path>
+        </svg>
+        <svg
+          id="theme-icon-sun"
+          class="h-4 w-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 3v1.5m6.364.636l-1.06 1.06M21 12h-1.5m-.636 6.364l-1.06-1.06M12 19.5V21m-6.364-2.136l1.06-1.06M4.5 12H3m2.136-6.364l1.06 1.06M12 8.25a3.75 3.75 0 100 7.5 3.75 3.75 0 000-7.5z"
+          ></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>

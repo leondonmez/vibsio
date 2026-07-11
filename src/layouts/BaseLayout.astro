@@ -1,0 +1,65 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "vibs.io — Project Planning Sandbox",
+  description = "An agnostic project management planning sandbox. Your workspace lives in the URL — share a link, share the plan. No account required.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+
+    <!--
+      Blocking theme bootstrap: runs before first paint so there is never a
+      flash of the wrong theme. LIGHT is the absolute default — the .dark
+      class is only stamped when the user has explicitly opted in.
+    -->
+    <script is:inline>
+      (() => {
+        try {
+          if (localStorage.getItem("vibsio:theme") === "dark") {
+            document.documentElement.classList.add("dark");
+          }
+        } catch (_) {
+          /* storage unavailable — stay on the light default */
+        }
+      })();
+    </script>
+  </head>
+  <body
+    class="min-h-full bg-slate-50 text-slate-900 antialiased transition-colors selection:bg-indigo-100 dark:bg-slate-950 dark:text-slate-100 dark:selection:bg-indigo-900"
+  >
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-indigo-600 focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white"
+    >
+      Skip to workspace
+    </a>
+
+    <slot />
+
+    <!-- Global toast region -->
+    <div
+      id="toast-region"
+      role="status"
+      aria-live="polite"
+      class="pointer-events-none fixed bottom-4 right-4 z-50 flex flex-col gap-2"
+    >
+    </div>
+  </body>
+</html>

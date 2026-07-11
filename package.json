@@ -1,0 +1,17 @@
+{
+  "name": "vibsio",
+  "version": "0.1.0",
+  "description": "vibs.io — agnostic project management planning sandbox. Layer 1: Core Workspace Architecture. The data is in the URL hash.",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.4",
+    "astro": "^5.7.4",
+    "tailwindcss": "^4.1.4"
+  }
+}
