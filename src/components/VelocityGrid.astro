@@ -1,0 +1,70 @@
+---
+/**
+ * LAYER 2 — Performance data-grid + drag-and-drop CSV parser.
+ * Rows are [period, velocity] pairs living in state.f.hist (URL hash).
+ * Rendering and import wiring handled by src/scripts/forecast.js.
+ */
+---
+
+<section
+  aria-labelledby="velocity-heading"
+  class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
+>
+  <div class="mb-1 flex items-baseline justify-between gap-3">
+    <h2 id="velocity-heading" class="text-sm font-semibold text-slate-900 dark:text-slate-100">
+      Historical Performance
+    </h2>
+    <span class="text-xs text-slate-400 dark:text-slate-500" data-term="throughput">Velocity</span>
+  </div>
+  <p class="mb-4 text-xs text-slate-500 dark:text-slate-400">
+    Record how many points the team actually delivered per
+    <span data-term="cycle">Sprint</span> — the forecast engine feeds on this table.
+  </p>
+
+  <table class="w-full table-fixed text-left">
+    <thead>
+      <tr class="border-b border-slate-200 dark:border-slate-700">
+        <th scope="col" class="w-2/5 pb-2 pr-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          <span data-term="cycle">Sprint</span> #
+        </th>
+        <th scope="col" class="w-2/5 pb-2 pr-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          <span data-term="throughput">Velocity</span> Achieved
+        </th>
+        <th scope="col" class="w-1/5 pb-2 text-right text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+          <span class="sr-only">Actions</span>
+        </th>
+      </tr>
+    </thead>
+    <tbody id="velocity-rows"></tbody>
+  </table>
+
+  <p id="velocity-empty" class="py-4 text-center text-sm text-slate-400 dark:text-slate-500">
+    No history yet — add rows manually or drop a CSV export below.
+  </p>
+
+  <button
+    id="add-velocity-row"
+    type="button"
+    class="mt-2 w-full rounded-lg border border-dashed border-slate-300 px-3 py-2 text-sm font-medium text-slate-600 transition hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600 dark:border-slate-700 dark:text-slate-400 dark:hover:border-indigo-700 dark:hover:bg-indigo-950 dark:hover:text-indigo-400"
+  >
+    + Add Row
+  </button>
+
+  <!-- Drag-and-drop CSV import zone -->
+  <div
+    id="csv-dropzone"
+    role="button"
+    tabindex="0"
+    aria-label="Import a CSV velocity report: drag and drop a file here, or press Enter to browse"
+    class="mt-4 cursor-pointer rounded-lg border-2 border-dashed border-slate-300 px-4 py-6 text-center transition dark:border-slate-700"
+  >
+    <p class="text-sm font-medium text-slate-600 dark:text-slate-300">
+      Drop a CSV report here
+    </p>
+    <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">
+      Jira, Linear, or spreadsheet velocity exports — or click to browse.
+      Numeric columns are auto-detected; noise is stripped.
+    </p>
+    <input id="csv-file-input" type="file" accept=".csv,.tsv,.txt" class="hidden" />
+  </div>
+</section>

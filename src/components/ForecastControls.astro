@@ -1,0 +1,75 @@
+---
+/**
+ * LAYER 2 — Milestone input matrix + Organic Scope Creep Simulator.
+ * All fields bind straight into state.f (URL hash) via forecast.js.
+ */
+---
+
+<section
+  aria-labelledby="forecast-controls-heading"
+  class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
+>
+  <h2 id="forecast-controls-heading" class="mb-1 text-sm font-semibold text-slate-900 dark:text-slate-100">
+    Forecast Configuration
+  </h2>
+  <p class="mb-4 text-xs text-slate-500 dark:text-slate-400">
+    Scope the remaining work and stress-test it against organic growth.
+  </p>
+
+  <div class="flex flex-col gap-4">
+    <div>
+      <label for="backlog-input" class="mb-1.5 block text-xs font-medium text-slate-600 dark:text-slate-400">
+        Total Remaining Backlog Points
+      </label>
+      <input
+        id="backlog-input"
+        type="number"
+        min="0"
+        max="1000000"
+        placeholder="e.g. 240"
+        class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950"
+      />
+    </div>
+
+    <div>
+      <label for="target-date-input" class="mb-1.5 block text-xs font-medium text-slate-600 dark:text-slate-400">
+        Target Completion Date <span class="font-normal text-slate-400">(optional)</span>
+      </label>
+      <input
+        id="target-date-input"
+        type="date"
+        class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950"
+      />
+    </div>
+
+    <div>
+      <div class="mb-1.5 flex items-center justify-between">
+        <label for="creep-slider" class="text-xs font-medium text-slate-600 dark:text-slate-400">
+          Organic Scope Creep Simulator
+        </label>
+        <output
+          id="creep-output"
+          for="creep-slider"
+          class="rounded-md bg-indigo-50 px-2 py-0.5 text-xs font-semibold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300"
+          >+0%</output
+        >
+      </div>
+      <input
+        id="creep-slider"
+        type="range"
+        min="0"
+        max="100"
+        step="1"
+        value="0"
+        aria-describedby="adjusted-backlog"
+        class="w-full accent-indigo-600"
+      />
+      <div class="mt-1 flex justify-between text-[10px] text-slate-400 dark:text-slate-500" aria-hidden="true">
+        <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
+      </div>
+      <p id="adjusted-backlog" class="mt-2 text-xs font-medium text-slate-500 dark:text-slate-400" aria-live="polite">
+        Enter the remaining backlog to activate the forecast.
+      </p>
+    </div>
+  </div>
+</section>

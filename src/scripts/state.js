@@ -23,6 +23,10 @@ export const DEFAULT_STATE = Object.freeze({
   m: "scrum",
   p: { title: "", objective: "", start: "", owner: "" },
   items: [],
+  // Layer 2 — Quantitative Forecasting Engine
+  // f.hist: [period, velocity] pairs · f.backlog: remaining points
+  // f.target: optional YYYY-MM-DD · f.creep: scope-creep % (0–100)
+  f: { hist: [], backlog: 0, target: "", creep: 0 },
 });
 
 let state = structuredClone(DEFAULT_STATE);
@@ -144,6 +148,29 @@ function normalize(obj) {
         s: [0, 1, 2].includes(it.s) ? it.s : 0,
         e: Number.isFinite(it.e) && it.e >= 0 ? Math.min(it.e, 9999) : 0,
       })),
+    // `f` is optional in older Layer 1 hashes — default it for forward compat
+    f: {
+      hist: (Array.isArray(obj.f?.hist) ? obj.f.hist : [])
+        .filter(
+          (r) =>
+            Array.isArray(r) &&
+            r.length >= 2 &&
+            Number.isFinite(Number(r[0])) &&
+            Number.isFinite(Number(r[1])),
+        )
+        .slice(0, 200)
+        .map((r) => [
+          Math.max(0, Math.min(9999, Math.round(Number(r[0])))),
+          Math.max(0, Math.min(9999, Math.round(Number(r[1])))),
+        ]),
+      backlog: Number.isFinite(Number(obj.f?.backlog))
+        ? Math.max(0, Math.min(1_000_000, Math.round(Number(obj.f.backlog))))
+        : 0,
+      target: /^\d{4}-\d{2}-\d{2}$/.test(obj.f?.target ?? "") ? obj.f.target : "",
+      creep: Number.isFinite(Number(obj.f?.creep))
+        ? Math.max(0, Math.min(100, Math.round(Number(obj.f.creep))))
+        : 0,
+    },
   };
 }
 

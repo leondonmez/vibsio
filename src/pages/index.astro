@@ -3,6 +3,9 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 import WorkspaceSidebar from "../components/WorkspaceSidebar.astro";
 import AuthGateModal from "../components/AuthGateModal.astro";
+import VelocityGrid from "../components/VelocityGrid.astro";
+import ForecastControls from "../components/ForecastControls.astro";
+import BurnupChart from "../components/BurnupChart.astro";
 ---
 
 <BaseLayout>
@@ -178,6 +181,13 @@ import AuthGateModal from "../components/AuthGateModal.astro";
             Nothing here yet — add your first item above.
           </p>
         </section>
+
+        <!-- Layer 2: Quantitative Forecasting Engine -->
+        <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+          <VelocityGrid />
+          <ForecastControls />
+        </div>
+        <BurnupChart />
 
         <!-- Protected AI module -->
         <section

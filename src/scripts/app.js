@@ -30,6 +30,7 @@ import {
   setSessionId,
   rotateSessionId,
 } from "./workspaces.js";
+import { initForecast, refreshForecastUi } from "./forecast.js";
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -316,6 +317,7 @@ async function loadWorkspace(entry) {
   renderItems();
   renderMetrics();
   renderSidebar();
+  refreshForecastUi();
 }
 
 function initSidebarActions() {
@@ -328,6 +330,7 @@ function initSidebarActions() {
     renderItems();
     renderMetrics();
     renderSidebar();
+    refreshForecastUi();
     $("#session-name")?.focus();
   });
 }
@@ -474,6 +477,7 @@ async function boot() {
   initAuthUi();
   renderAuthIndicator();
   initSyncStatus();
+  initForecast();
 
   if (source === "recovered") {
     toast("Previous session recovered from this browser — no account needed.");
@@ -492,6 +496,7 @@ async function boot() {
     renderItems();
     renderMetrics();
     renderSidebar();
+    refreshForecastUi();
   });
 }
 
