@@ -11,9 +11,8 @@
  */
 
 export const SUPABASE_URL = "https://dkrizpcahkjaltwesmle.supabase.co";
-// TODO(config): set the anon (public) key to enable client-side session
-// exchange after the OAuth redirect returns. Safe to ship in client code.
-export const SUPABASE_ANON_KEY = "";
+// Publishable key (successor to the legacy "anon" key) — client-safe by design.
+export const SUPABASE_ANON_KEY = "sb_publishable_FI_ImZ29ApKDfKHvFkSD8A_4mJe8Pk4";
 
 const LS_PROFILE = "vibsio:auth:profile";
 
