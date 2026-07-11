@@ -10,8 +10,9 @@
  * instead of redirecting.
  */
 
-// TODO(config): set once the Supabase project is provisioned.
-export const SUPABASE_URL = ""; // e.g. "https://abcd1234.supabase.co"
+export const SUPABASE_URL = "https://dkrizpcahkjaltwesmle.supabase.co";
+// TODO(config): set the anon (public) key to enable client-side session
+// exchange after the OAuth redirect returns. Safe to ship in client code.
 export const SUPABASE_ANON_KEY = "";
 
 const LS_PROFILE = "vibsio:auth:profile";
