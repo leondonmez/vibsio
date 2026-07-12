@@ -358,7 +358,7 @@ function renderAuthIndicator() {
   const label = $("#tier-label");
   const dot = $("#tier-dot");
   const avatar = $("#tier-avatar");
-  const btn = $("#tier-btn");
+  const btn = $("#tier-status");
   if (!label || !dot) return;
   const authState = getAuthState();
   const profile = getAuthProfile();
@@ -386,72 +386,6 @@ function renderAuthIndicator() {
   const signoutBtn = $("#auth-signout-btn");
   signinBtn?.classList.toggle("hidden", authState !== AUTH_STATES.GUEST);
   signoutBtn?.classList.toggle("hidden", authState === AUTH_STATES.GUEST);
-}
-
-/* Tier dropdown + upgrade CTA wiring */
-function initPremiumUi() {
-  const menu = $("#tier-menu");
-  const btn = $("#tier-btn");
-  if (btn && menu) {
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const open = menu.classList.toggle("hidden");
-      btn.setAttribute("aria-expanded", String(!open));
-    });
-    document.addEventListener("click", (e) => {
-      if (!menu.contains(e.target) && e.target !== btn) {
-        menu.classList.add("hidden");
-        btn.setAttribute("aria-expanded", "false");
-      }
-    });
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        menu.classList.add("hidden");
-        btn.setAttribute("aria-expanded", "false");
-      }
-    });
-  }
-  const upgradeMsg = () =>
-    toast("Enterprise Pro checkout is coming online — your personal sandbox stays free forever.");
-  $("#upgrade-btn")?.addEventListener("click", upgradeMsg);
-  $("#tier-upgrade-cta")?.addEventListener("click", upgradeMsg);
-}
-
-/* Marketing hero: anonymous first-timers only; collapses on demo launch */
-function heroDismissed() {
-  try {
-    return localStorage.getItem("vibsio:hero:dismissed") === "1";
-  } catch {
-    return true;
-  }
-}
-
-function collapseHero(instant = false) {
-  const hero = $("#marketing-hero");
-  if (!hero || hero.classList.contains("hidden")) return;
-  try {
-    localStorage.setItem("vibsio:hero:dismissed", "1");
-  } catch {
-    /* noop */
-  }
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (instant || reduced) {
-    hero.classList.add("hidden");
-    return;
-  }
-  hero.style.maxHeight = `${hero.scrollHeight}px`;
-  hero.style.overflow = "hidden";
-  hero.style.transition = "max-height 0.5s ease, opacity 0.35s ease";
-  requestAnimationFrame(() => {
-    hero.style.maxHeight = "0px";
-    hero.style.opacity = "0";
-  });
-  setTimeout(() => hero.classList.add("hidden"), 550);
-}
-
-function initHero(source) {
-  const eligible = source === "fresh" && getAuthState() === AUTH_STATES.GUEST && !heroDismissed();
-  if (eligible) $("#marketing-hero")?.classList.remove("hidden");
 }
 
 let lastFocused = null;
@@ -549,11 +483,9 @@ async function boot() {
   // Live session bridge: any auth transition (sign-in, refresh, sign-out)
   // re-renders the 3-state indicator AND re-scopes the workspace sidebar to
   // the signed-in user's own history index.
-  onAuthStateChange((event) => {
+  onAuthStateChange(() => {
     renderAuthIndicator();
     renderSidebar();
-    // Signed-in users are never "anonymous first-timers" — drop the hero
-    if (event === "SIGNED_IN" || event === "INITIAL_SESSION") collapseHero(true);
   });
 
   // OAuth callback tokens arrive in the URL hash — the same slot the state
@@ -576,8 +508,6 @@ async function boot() {
   initAuthUi();
   renderAuthIndicator();
   initSyncStatus();
-  initPremiumUi();
-  initHero(source);
   initTabs();
   initForecast();
   initBlueprint();
@@ -596,7 +526,6 @@ async function boot() {
   // One-click demo engine: inject the sample enterprise workspace through
   // the URL-hash pipeline (lazy chunk — costs nothing until clicked).
   $("#demo-launch-btn")?.addEventListener("click", async () => {
-    collapseHero();
     (await import("../utils/demoLoader.js")).launchDemo();
   });
 

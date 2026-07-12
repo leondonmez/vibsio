@@ -1,70 +1,42 @@
 ---
 /**
- * ENTRY OVERHAUL — strategic hero & market positioning sheet.
- * Sits directly below the header, above the live workspace. Fixes
- * "dashboard blindness": identity, positioning, and differentiators
- * before the user meets the grid.
+ * CONTEXT HUB — permanent, low-profile brand/value banner.
+ * A slim metadata strip between the header and the planning console that
+ * keeps the product's purpose explicit on every tab, at a glance.
+ * The demo + tour actions stay reachable from here.
  */
-import QuickStartCard from "./QuickStartCard.astro";
-
-const pillars = [
-  {
-    icon: "🔗",
-    title: "100% Stateless Data",
-    body: "Your whole plan is compressed into the URL itself — nothing stored on servers, share a link to share the plan.",
-  },
-  {
-    icon: "🚀",
-    title: "Zero Admin Overhead",
-    body: "No configuration maps, no workspace setup, no accounts required. Open the page, start modeling.",
-  },
-  {
-    icon: "🔄",
-    title: "Framework Agnostic",
-    body: "Instantly switches between Scrum, Kanban, and Traditional PMO definitions — every label, metric, and status.",
-  },
-];
 ---
 
 <section
   id="marketing-hero"
-  aria-labelledby="hero-heading"
-  class="hidden shrink-0 overflow-y-auto border-b border-slate-200 bg-gradient-to-b from-indigo-50/70 via-white to-white dark:border-slate-800 dark:from-indigo-950/30 dark:via-slate-950 dark:to-slate-950"
+  aria-label="What vibs.io is"
+  class="shrink-0 border-b border-slate-200 bg-gradient-to-r from-indigo-50 via-white to-white dark:border-slate-800 dark:from-indigo-950/40 dark:via-slate-950 dark:to-slate-950"
 >
-  <div class="mx-auto grid max-w-7xl items-center gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-10 lg:py-7">
-    <div>
-      <p class="mb-3 inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-white px-3 py-1 text-[11px] font-semibold text-indigo-700 dark:border-indigo-800 dark:bg-slate-900 dark:text-indigo-300">
-        <span aria-hidden="true">🧪</span> Test-drive the plan before the plan tests you
-      </p>
-      <h1
-        id="hero-heading"
-        class="text-3xl font-bold leading-tight tracking-tight text-slate-900 sm:text-4xl dark:text-slate-50"
+  <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5 px-4 py-2 sm:px-5">
+    <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-indigo-200 bg-white px-2.5 py-0.5 text-[11px] font-bold text-indigo-700 dark:border-indigo-800 dark:bg-slate-900 dark:text-indigo-300">
+      <span aria-hidden="true">🧪</span> Pre-Flight Sandbox
+    </span>
+
+    <p class="min-w-0 flex-1 truncate text-xs text-slate-600 dark:text-slate-400">
+      <strong class="font-semibold text-slate-800 dark:text-slate-200">The Pre-Flight Sandbox for High-Velocity Product Teams</strong>
+      <span class="hidden sm:inline"> — a zero-login, stateless planning playground built next to Jira and Linear.</span>
+    </p>
+
+    <div class="flex shrink-0 items-center gap-1.5">
+      <button
+        id="demo-launch-btn"
+        type="button"
+        class="rounded-md bg-indigo-600 px-2.5 py-1 text-[11px] font-semibold text-white shadow-sm transition hover:bg-indigo-500"
       >
-        The Pre-Flight Sandbox for
-        <span class="text-indigo-600 dark:text-indigo-400">High-Velocity Product Teams.</span>
-      </h1>
-      <p class="mt-4 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base dark:text-slate-400">
-        A zero-login, stateless planning playground. Model Monte Carlo delivery forecasts, simulate
-        organizational resource constraints, and decompose messy epics into stack-specific subtasks
-        — without messing up your live Jira or Linear boards.
-      </p>
-
-      <!-- Differentiator matrix -->
-      <dl class="mt-6 grid gap-3 sm:grid-cols-3">
-        {
-          pillars.map((pillar) => (
-            <div class="rounded-xl border border-slate-200 bg-white/80 p-3.5 dark:border-slate-800 dark:bg-slate-900/60">
-              <dt class="flex items-center gap-1.5 text-xs font-bold text-slate-900 dark:text-slate-100">
-                <span aria-hidden="true">{pillar.icon}</span>
-                {pillar.title}
-              </dt>
-              <dd class="mt-1 text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">{pillar.body}</dd>
-            </div>
-          ))
-        }
-      </dl>
+        ⚡ Load sample data
+      </button>
+      <button
+        id="hero-tour-btn"
+        type="button"
+        class="rounded-md border border-slate-300 px-2.5 py-1 text-[11px] font-medium text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+      >
+        Take the tour
+      </button>
     </div>
-
-    <QuickStartCard />
   </div>
 </section>
