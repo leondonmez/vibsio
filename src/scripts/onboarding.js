@@ -43,6 +43,17 @@ function markCompleted() {
 /* ---------------------------------------------------------------- */
 
 function loadSampleData() {
+  const btn = $("#onboard-action");
+  // Never clobber a real workspace: if history already exists (e.g. the
+  // tour was launched manually from the header), keep the user's data.
+  if (getState().f.hist.length > 0) {
+    if (btn) {
+      btn.textContent = "✓ Using your existing data";
+      btn.disabled = true;
+      btn.classList.add("opacity-70");
+    }
+    return;
+  }
   update((d) => {
     d.f.hist = [
       [1, 21],
@@ -55,7 +66,6 @@ function loadSampleData() {
     d.f.backlog = 240;
   });
   refreshForecastUi();
-  const btn = $("#onboard-action");
   if (btn) {
     btn.textContent = "✓ Sample data loaded";
     btn.disabled = true;
@@ -295,6 +305,10 @@ function celebrate() {
 /* ---------------------------------------------------------------- */
 
 function startTour() {
+  if (active && !minimized) {
+    showStep(0);
+    return;
+  }
   active = true;
   minimized = false;
   $("#onboard-root")?.classList.remove("hidden");
@@ -335,6 +349,9 @@ function startTour() {
  * or a returning session ("recovered"), which both bypass the guide.
  */
 export function initOnboarding(hydrationSource) {
+  // Header launcher: any user, any time, regardless of flags or data.
+  $("#tour-launch-btn")?.addEventListener("click", startTour);
+
   if (hydrationSource !== "fresh" || isCompleted()) return;
   // Idle-defer so the tour never competes with first-paint data rendering
   const start = () => setTimeout(startTour, 400);
