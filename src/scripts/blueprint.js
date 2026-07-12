@@ -19,6 +19,7 @@ import {
   tagLabel,
 } from "../utils/clipboardPackager.js";
 import { AUTH_STATES, getAuthState, getAccessToken } from "./auth.js";
+import { activeDirectives } from "../utils/complianceProfiles.js";
 
 const $ = (sel) => document.querySelector(sel);
 const CLOUD_ENDPOINT = "/api/blueprint";
@@ -180,7 +181,7 @@ function acceptance(subject, syntax, behavior) {
     : `AC: ${behavior} works end-to-end and is covered by a test`;
 }
 
-function synthesizeBlueprint({ epic, stack, seniority, syntax }) {
+function synthesizeBlueprint({ epic, stack, seniority, syntax, compliance }) {
   const prof = STACK_PROFILES[stack] ?? STACK_PROFILES["nextjs-supabase"];
   const subject =
     epic.split(/[.!?\n]/)[0].trim().slice(0, 80) || "the feature";
@@ -201,7 +202,16 @@ function synthesizeBlueprint({ epic, stack, seniority, syntax }) {
     core.push(mk(`Create seed/fixture data so ${subject} is demoable in every environment\n${acceptance(subject, syntax, "the seed script runs idempotently")}`));
   }
 
+  // Governance injection: every core task inherits the active DoD banner,
+  // and each framework contributes its testing protocol to the QA track.
+  if (compliance?.labels?.length) {
+    for (const task of core) {
+      task.t += `\nDoD: ${compliance.labels.join(" + ")} criteria apply`;
+    }
+  }
+
   const cross = [
+    ...(compliance?.qaTasks ?? []).map((c) => mk(c.t, c.tag)),
     mk(`Author a ${prof.test} covering the ${subject} happy path plus the top failure mode`, "qa"),
     mk(`Add a regression scenario asserting ${subject} permissions cannot be bypassed`, "qa"),
     mk(`Update ${prof.infra} for the new ${subject} surface (secrets, env vars, build step)`, "devops"),
@@ -275,11 +285,21 @@ async function generate() {
     await termType(`$ vibsio blueprint --stack ${r.stack} --level ${r.seniority} --syntax ${r.syntax}`, "dim");
     await termType(`→ PII filter: ${describeFindings(findings)} ${redacted ? "→ replaced with generic tokens" : "detected"}`, redacted ? "warn" : "ok");
 
+    // Layer 4: active governance frameworks ride along with every payload
+    const compliance = activeDirectives(getState().g.frameworks);
+    if (compliance.labels.length) {
+      await termType(
+        `→ Governance: ${compliance.labels.join(", ")} active — injecting ${compliance.dod.length} DoD criteria + ${compliance.qaTasks.length} QA protocols.`,
+        "warn",
+      );
+    }
+
     const payload = {
       epic: clean,
       stack: r.stack,
       seniority: r.seniority,
       syntax: r.syntax,
+      compliance,
     };
 
     // 2. Cloud stream for authenticated users; local synthesis otherwise

@@ -1,0 +1,53 @@
+---
+/**
+ * LAYER 4 — Structured metadata head block.
+ * Canonical URL, Open Graph / Twitter cards, and Schema.org
+ * WebApplication JSON-LD for every route (including /tools/{slug}).
+ */
+
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  image?: string;
+}
+
+const SITE = "https://vibs.io";
+const { title, description, path, image = "/og-image.jpg" } = Astro.props;
+const canonical = new URL(path, SITE).href;
+const imageUrl = new URL(image, SITE).href;
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: title,
+  description,
+  url: canonical,
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Any (web browser)",
+  browserRequirements: "Requires JavaScript",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "vibs.io",
+    url: SITE,
+  },
+};
+---
+
+<link rel="canonical" href={canonical} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:type" content="website" />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={imageUrl} />
+<meta property="og:site_name" content="vibs.io" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageUrl} />
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />

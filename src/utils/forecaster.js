@@ -118,6 +118,51 @@ export function buildForecast({ hist, backlog, creepPct }) {
 }
 
 /* ---------------------------------------------------------------- */
+/* LAYER 4 — Multi-team resource constraint simulation               */
+/* ---------------------------------------------------------------- */
+
+/**
+ * Organizational throughput factor from resource modeling inputs:
+ * scaling the team down or raising cross-team dependency friction
+ * shrinks effective velocity before any team touches live data.
+ */
+export function constraintFactor({ fteBase, fte, friction }) {
+  const base = Math.max(1, fteBase);
+  const avail = Math.max(0.5, fte);
+  const fric = Math.min(2, Math.max(1, friction));
+  const factor = avail / base / fric;
+  return Math.min(3, Math.max(0.05, Math.round(factor * 1000) / 1000));
+}
+
+/**
+ * Intercepts the standard Monte Carlo pipeline with the constraint factor
+ * applied to every sampled velocity, then projects the secondary
+ * "Constrained Timeline" boundary (expected-scenario slope × factor).
+ * Returns null when the factor is neutral (no overlay to draw).
+ */
+export function constrainForecast({ hist, backlog, creepPct }, resources) {
+  const factor = constraintFactor(resources);
+  if (factor === 1) return null;
+  const velocities = cleanVelocities(hist);
+  const adjustedBacklog = Math.round(backlog * (1 + creepPct / 100));
+  const scen = scenarioVelocities(velocities);
+  if (!scen || adjustedBacklog <= 0) return null;
+
+  const velocity = scen.expected * factor;
+  const mc = monteCarlo(
+    velocities.map((v) => v * factor),
+    adjustedBacklog,
+  );
+  return {
+    factor,
+    velocity,
+    periods: periodsNeeded(adjustedBacklog, velocity),
+    mcPeriods: mc?.p50 ?? null,
+    mcWorst: mc?.p90 ?? null,
+  };
+}
+
+/* ---------------------------------------------------------------- */
 /* CSV / Excel-export parser                                         */
 /* ---------------------------------------------------------------- */
 

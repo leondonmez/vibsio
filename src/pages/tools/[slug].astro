@@ -1,0 +1,92 @@
+---
+/**
+ * LAYER 4 — Programmatic SEO landing pages.
+ * One route, driven entirely by the TOOL_PAGES dictionary; every page gets
+ * canonical + OG + WebApplication schema via BaseLayout → SeoMetadata.
+ */
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SiteHeader from "../../components/SiteHeader.astro";
+import { TOOL_PAGES } from "../../data/toolPages.js";
+
+export function getStaticPaths() {
+  return TOOL_PAGES.map((page) => ({ params: { slug: page.slug }, props: { page } }));
+}
+
+const { page } = Astro.props;
+const related = TOOL_PAGES.filter((p) => p.slug !== page.slug).slice(0, 3);
+---
+
+<BaseLayout title={page.title} description={page.description}>
+  <SiteHeader />
+
+  <main id="main" class="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+    <p class="mb-3 text-xs font-semibold uppercase tracking-wide text-indigo-600 dark:text-indigo-400">
+      Free planning tool
+    </p>
+    <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">{page.h1}</h1>
+    <p class="mt-3 text-base leading-relaxed text-slate-600 dark:text-slate-400">{page.tagline}</p>
+
+    <div class="mt-6 flex flex-wrap gap-3">
+      <a
+        href="/"
+        class="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500"
+      >
+        Open the workspace — it's free
+      </a>
+      <span class="self-center text-xs text-slate-400 dark:text-slate-500">No sign-up · runs in your browser</span>
+    </div>
+
+    <div class="mt-10 flex flex-col gap-8">
+      {
+        page.sections.map((section) => (
+          <section>
+            <h2 class="mb-2 text-lg font-semibold text-slate-900 dark:text-slate-100">{section.h2}</h2>
+            <p class="text-sm leading-relaxed text-slate-700 dark:text-slate-300">{section.body}</p>
+          </section>
+        ))
+      }
+
+      <section class="rounded-xl border border-slate-200 bg-slate-50 p-5 dark:border-slate-800 dark:bg-slate-900">
+        <h2 class="mb-3 text-sm font-semibold text-slate-900 dark:text-slate-100">What you get</h2>
+        <ul class="flex flex-col gap-2" role="list">
+          {
+            page.bullets.map((bullet) => (
+              <li class="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
+                <span class="mt-0.5 text-emerald-500" aria-hidden="true">
+                  ✓
+                </span>
+                {bullet}
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="mb-3 text-sm font-semibold text-slate-900 dark:text-slate-100">Related tools</h2>
+        <ul class="flex flex-col gap-1.5" role="list">
+          {
+            related.map((r) => (
+              <li>
+                <a
+                  href={`/tools/${r.slug}`}
+                  class="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+                >
+                  {r.h1}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+    </div>
+  </main>
+
+  <footer class="border-t border-slate-200 py-6 dark:border-slate-800">
+    <p class="mx-auto max-w-3xl px-4 text-xs text-slate-400 sm:px-6 dark:text-slate-500">
+      vibs.io · <a href="/" class="hover:underline">Workspace</a> ·
+      <a href="/privacy" class="hover:underline">Privacy</a> ·
+      <a href="/terms" class="hover:underline">Terms</a>
+    </p>
+  </footer>
+</BaseLayout>

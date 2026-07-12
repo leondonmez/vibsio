@@ -10,6 +10,9 @@ import RequirementHub from "../components/RequirementHub.astro";
 import GenerationTerminal from "../components/GenerationTerminal.astro";
 import BlueprintGrid from "../components/BlueprintGrid.astro";
 import IntegrationDrawer from "../components/IntegrationDrawer.astro";
+import GovernancePanel from "../components/GovernancePanel.astro";
+import ResourceOverlay from "../components/ResourceOverlay.astro";
+import TokenManager from "../components/TokenManager.astro";
 ---
 
 <BaseLayout>
@@ -191,7 +194,11 @@ import IntegrationDrawer from "../components/IntegrationDrawer.astro";
           <VelocityGrid />
           <ForecastControls />
         </div>
+        <ResourceOverlay />
         <BurnupChart />
+
+        <!-- Layer 4: Governance & Compliance -->
+        <GovernancePanel />
 
         <!-- Layer 3: Qualitative Requirement Blueprint Engine -->
         <RequirementHub />
@@ -211,6 +218,7 @@ import IntegrationDrawer from "../components/IntegrationDrawer.astro";
 
   <AuthGateModal />
   <IntegrationDrawer />
+  <TokenManager />
 
   <script>
     import "../scripts/app.js";

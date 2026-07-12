@@ -4,6 +4,9 @@
   "description": "vibs.io — agnostic project management planning sandbox. Layer 1: Core Workspace Architecture. The data is in the URL hash.",
   "type": "module",
   "scripts": {
+    "sitemap": "node scripts/generate-sitemap.mjs",
+    "prebuild": "node scripts/generate-sitemap.mjs",
+    "predev": "node scripts/generate-sitemap.mjs",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",

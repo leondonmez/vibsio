@@ -34,6 +34,8 @@ import {
 } from "./workspaces.js";
 import { initForecast, refreshForecastUi } from "./forecast.js";
 import { initBlueprint, refreshBlueprintUi } from "./blueprint.js";
+import { initGovernance, refreshGovernanceUi } from "./governance.js";
+import { initIntegrations } from "./integrations.js";
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -322,6 +324,7 @@ async function loadWorkspace(entry) {
   renderSidebar();
   refreshForecastUi();
   refreshBlueprintUi();
+  refreshGovernanceUi();
 }
 
 function initSidebarActions() {
@@ -336,6 +339,7 @@ function initSidebarActions() {
     renderSidebar();
     refreshForecastUi();
     refreshBlueprintUi();
+    refreshGovernanceUi();
     $("#session-name")?.focus();
   });
 }
@@ -499,6 +503,10 @@ async function boot() {
   initSyncStatus();
   initForecast();
   initBlueprint();
+  initGovernance();
+  initIntegrations();
+  // Gated modules (e.g. the resource overlay lock) can summon the auth gate
+  document.addEventListener("vibsio:opengate", openAiGate);
 
   if (source === "recovered") {
     toast("Previous session recovered from this browser — no account needed.");
@@ -519,6 +527,7 @@ async function boot() {
     renderSidebar();
     refreshForecastUi();
     refreshBlueprintUi();
+    refreshGovernanceUi();
   });
 }
 

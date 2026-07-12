@@ -11,6 +11,8 @@
  *                  #w0:<base64url JSON>               (fallback, no CompressionStream)
  */
 
+import { COMPLIANCE_KEYS } from "../utils/complianceProfiles.js";
+
 const PREFIX_DEFLATE = "w1:";
 const PREFIX_PLAIN = "w0:";
 const LS_CURRENT = "vibsio:session:current";
@@ -26,7 +28,11 @@ export const DEFAULT_STATE = Object.freeze({
   // Layer 2 — Quantitative Forecasting Engine
   // f.hist: [period, velocity] pairs · f.backlog: remaining points
   // f.target: optional YYYY-MM-DD · f.creep: scope-creep % (0–100)
-  f: { hist: [], backlog: 0, target: "", creep: 0 },
+  // Layer 4 resource overlay: fteBase/fte = historical vs available FTE,
+  // friction = cross-team dependency multiplier (1–2x)
+  f: { hist: [], backlog: 0, target: "", creep: 0, fteBase: 5, fte: 5, friction: 1 },
+  // Layer 4 — Governance: active compliance framework keys
+  g: { frameworks: [] },
   // Layer 3 — Qualitative Requirement Blueprint Engine
   // r.epic: raw concept text · r.stack/seniority/syntax: generation params
   // r.tasks: generated + hand-edited blueprint (core/cross tracks)
@@ -191,6 +197,21 @@ function normalize(obj) {
       creep: Number.isFinite(Number(obj.f?.creep))
         ? Math.max(0, Math.min(100, Math.round(Number(obj.f.creep))))
         : 0,
+      fteBase: Number.isFinite(Number(obj.f?.fteBase))
+        ? Math.max(1, Math.min(500, Math.round(Number(obj.f.fteBase))))
+        : 5,
+      fte: Number.isFinite(Number(obj.f?.fte))
+        ? Math.max(1, Math.min(500, Math.round(Number(obj.f.fte))))
+        : 5,
+      friction: Number.isFinite(Number(obj.f?.friction))
+        ? Math.max(1, Math.min(2, Math.round(Number(obj.f.friction) * 100) / 100))
+        : 1,
+    },
+    g: {
+      frameworks: (Array.isArray(obj.g?.frameworks) ? obj.g.frameworks : [])
+        .filter((k) => COMPLIANCE_KEYS.includes(k))
+        .filter((k, i, arr) => arr.indexOf(k) === i)
+        .slice(0, COMPLIANCE_KEYS.length),
     },
     r: {
       epic: String(obj.r?.epic ?? "").slice(0, 4000),

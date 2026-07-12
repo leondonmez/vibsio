@@ -11,7 +11,13 @@
 
 import { getState, update, subscribe } from "./state.js";
 import { getMethodology } from "./methodology.js";
-import { buildForecast, parseVelocityCsv } from "../utils/forecaster.js";
+import {
+  buildForecast,
+  parseVelocityCsv,
+  constrainForecast,
+  constraintFactor,
+} from "../utils/forecaster.js";
+import { AUTH_STATES, getAuthState } from "./auth.js";
 
 const $ = (sel) => document.querySelector(sel);
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -28,6 +34,7 @@ const COLORS = {
   optimistic: "#10b981",
   expected: "#3b82f6",
   pessimistic: "#ef4444",
+  constrained: "#f97316",
 };
 
 /* ================================================================ */
@@ -168,7 +175,41 @@ export function pushForecastInputs() {
   if (backlog && backlog.value !== String(f.backlog)) backlog.value = f.backlog === 0 ? "" : String(f.backlog);
   if (target && target.value !== f.target) target.value = f.target;
   if (creep && creep.value !== String(f.creep)) creep.value = String(f.creep);
+  const fteBase = $("#fte-base");
+  const fte = $("#fte-count");
+  const friction = $("#friction-slider");
+  if (fteBase && fteBase.value !== String(f.fteBase)) fteBase.value = String(f.fteBase);
+  if (fte && fte.value !== String(f.fte)) fte.value = String(f.fte);
+  if (friction && friction.value !== String(f.friction)) friction.value = String(f.friction);
   reflectCreep();
+  reflectConstraint();
+}
+
+function reflectConstraint() {
+  const { f } = getState();
+  const out = $("#friction-output");
+  if (out) out.textContent = `${f.friction.toFixed(2)}x`;
+  const line = $("#constrained-summary");
+  if (!line) return;
+  const factor = constraintFactor(f);
+  if (factor === 1) {
+    line.textContent = "Overlay inactive — resources match the historical baseline.";
+    line.className = "mt-3 text-xs font-medium text-slate-500 dark:text-slate-400";
+  } else {
+    line.textContent = `Constraint factor ${factor.toFixed(2)}x — effective throughput ${factor < 1 ? "drops to" : "rises to"} ${(factor * 100).toFixed(0)}% of the historical expected velocity.`;
+    line.className = "mt-3 text-xs font-semibold text-orange-600 dark:text-orange-400";
+  }
+}
+
+/* Guest lock: organizational modeling requires STATE 2+ */
+export function renderResourceGate() {
+  const lock = $("#resource-lock");
+  const controls = $("#resource-controls");
+  if (!lock || !controls) return;
+  const guest = getAuthState() === AUTH_STATES.GUEST;
+  lock.classList.toggle("hidden", !guest);
+  lock.classList.toggle("flex", guest);
+  controls.disabled = guest;
 }
 
 function reflectCreep() {
@@ -207,6 +248,34 @@ function initControls() {
   });
   $("#add-velocity-row")?.addEventListener("click", addRow);
   $("#export-svg-btn")?.addEventListener("click", exportSvg);
+
+  // Layer 4 — resource overlay controls
+  $("#fte-base")?.addEventListener("input", (e) => {
+    const v = Math.max(1, Math.min(500, Math.round(Number(e.target.value) || 1)));
+    update((d) => {
+      d.f.fteBase = v;
+    });
+    reflectConstraint();
+  });
+  $("#fte-count")?.addEventListener("input", (e) => {
+    const v = Math.max(1, Math.min(500, Math.round(Number(e.target.value) || 1)));
+    update((d) => {
+      d.f.fte = v;
+    });
+    reflectConstraint();
+  });
+  $("#friction-slider")?.addEventListener("input", (e) => {
+    const v = Math.max(1, Math.min(2, Math.round(Number(e.target.value) * 100) / 100));
+    update((d) => {
+      d.f.friction = v;
+    });
+    reflectConstraint();
+  });
+  $("#resource-lock-signin")?.addEventListener("click", () => {
+    document.dispatchEvent(new CustomEvent("vibsio:opengate"));
+  });
+  document.addEventListener("vibsio:authchange", renderResourceGate);
+  renderResourceGate();
 }
 
 /* ================================================================ */
@@ -372,6 +441,36 @@ function renderChart(fc, dict) {
     );
     markers.push({ x: x(endP) + 8, y: y(endPts) + 4, color, text: `${label} · ${dict.terms.cycle} ${n + s.periods}` });
   }
+
+  /* Layer 4: Constrained Timeline boundary (dashed vector overlay) */
+  const constrained = constrainForecast(
+    { hist: f.hist, backlog: f.backlog, creepPct: f.creep },
+    { fteBase: f.fteBase, fte: f.fte, friction: f.friction },
+  );
+  if (constrained && constrained.periods !== null) {
+    const endP = Math.min(n + fc.adjustedBacklog / constrained.velocity, maxX);
+    const endPts = Math.min(done + (endP - n) * constrained.velocity, total);
+    svg.append(
+      el("line", {
+        x1: x(n),
+        y1: y(done),
+        x2: x(endP),
+        y2: y(endPts),
+        stroke: COLORS.constrained,
+        "stroke-width": 2,
+        "stroke-dasharray": "7 5",
+        "stroke-linecap": "round",
+      }),
+      el("circle", { cx: x(endP), cy: y(endPts), r: 4, fill: "none", stroke: COLORS.constrained, "stroke-width": 2 }),
+    );
+    markers.push({
+      x: x(endP) + 8,
+      y: y(endPts) + 4,
+      color: COLORS.constrained,
+      text: `Constrained · ${dict.terms.cycle} ${n + constrained.periods}`,
+    });
+  }
+
   // De-collide the termination labels: all trajectories converge on the
   // scope line, so stack any labels closer than 15px vertically.
   markers.sort((a, b) => a.y - b.y);
