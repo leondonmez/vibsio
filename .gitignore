@@ -12,3 +12,6 @@ node_modules/
 # os / editor
 .DS_Store
 *.log
+
+# supabase CLI local state
+supabase/.temp/
