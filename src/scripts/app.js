@@ -527,12 +527,18 @@ async function boot() {
     await syncNow();
   }
 
+  // One-click demo engine: inject the sample enterprise workspace through
+  // the URL-hash pipeline (lazy chunk — costs nothing until clicked).
+  $("#demo-launch-btn")?.addEventListener("click", async () => {
+    (await import("../utils/demoLoader.js")).launchDemo();
+  });
+
   // First-time visitors (fresh workspace, no completion flag) get the
   // interactive walkthrough; shared-link and returning sessions bypass it.
-  // The header button launches it for anyone, anytime.
-  $("#tour-launch-btn")?.addEventListener("click", async () => {
-    (await loadTour()).startTour();
-  });
+  // The header button and hero link launch it for anyone, anytime.
+  const launchTour = async () => (await loadTour()).startTour();
+  $("#tour-launch-btn")?.addEventListener("click", launchTour);
+  $("#hero-tour-btn")?.addEventListener("click", launchTour);
   let tourDone = true;
   try {
     tourDone = localStorage.getItem("vibs_onboarding_completed") === "1";

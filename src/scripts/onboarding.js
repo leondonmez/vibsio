@@ -67,16 +67,22 @@ function loadSampleData() {
 
 const STEPS = [
   {
+    targets: ["#marketing-hero"],
+    pad: 0,
+    title: "Welcome to the pre-flight sandbox",
+    body: "This is where plans get stress-tested BEFORE they touch your live Jira or Linear boards. Everything you're about to build is stateless — the entire workspace compresses into the URL in your address bar, so there's nothing to set up and nothing to leak. Let's walk the four stations of the engine.",
+  },
+  {
     targets: ['[aria-labelledby="velocity-heading"]'],
     title: "Feed the quantitative engine",
-    body: 'This grid is the numeric heart of the sandbox. Real teams drop a CSV export straight from their tracker into the drop-zone — for now, inject six <span data-term="cycle">Sprint</span>s of sample <span data-term="throughput">Velocity</span> and watch the whole dashboard wake up.',
+    body: 'This grid is the numeric heart of the sandbox. Real teams drop a CSV export straight from their tracker into the drop-zone — for now, inject six <span data-term="cycle">Sprint</span>s of sample <span data-term="throughput">Velocity</span> and watch the whole dashboard wake up. Real history matters: our forecasts are built from what your team actually shipped, not what anyone hopes.',
     action: { label: "⚡ Load Sample Data", run: loadSampleData },
   },
   {
     targets: ["#creep-slider"],
     pad: 28,
-    title: "Stress-test the delivery date",
-    body: 'Drag the Organic Scope Creep Simulator. The Monte Carlo trajectories on the burnup chart re-project instantly — every notch of backlog growth moves your <span data-term="cycle">Sprint</span> milestones in real time.',
+    title: "Probability curves, not promises",
+    body: 'Drag the Organic Scope Creep Simulator and watch the burnup re-project live. Here\'s the philosophy: a single delivery date is a statistical lie. The Monte Carlo engine replays your real <span data-term="throughput">Velocity</span> history 1,500 times to produce a probability spread — best case, expected, and the commitment-safe worst case — so your <span data-term="cycle">Sprint</span> milestones carry confidence levels instead of wishful thinking.',
   },
   {
     targets: ["#epic-input"],
@@ -88,7 +94,7 @@ const STEPS = [
     targets: ["#open-drawer-btn", "#generate-btn"],
     pad: 14,
     title: "Package it for your tracker",
-    body: "When the blueprint is ready, the Integration Drawer compiles everything into clean Markdown checklists or a minified JSON array — paste-ready for Jira, Linear, Asana, or Azure DevOps. Your whole workspace also lives in the URL: copy the address bar to share it.",
+    body: "When the blueprint is ready, the Integration Drawer compiles everything into clean Markdown checklists or a minified JSON array — paste-ready for Jira, Linear, Asana, or Azure DevOps. Only then does the plan touch your real boards: fully rehearsed, probability-checked, and shareable as a plain URL.",
   },
 ];
 
