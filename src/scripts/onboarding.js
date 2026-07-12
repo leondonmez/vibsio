@@ -22,14 +22,6 @@ const REDUCED = () => window.matchMedia("(prefers-reduced-motion: reduce)").matc
 /* Persistent flag                                                   */
 /* ---------------------------------------------------------------- */
 
-function isCompleted() {
-  try {
-    return localStorage.getItem(FLAG) === "1";
-  } catch {
-    return true; // storage unavailable — never nag
-  }
-}
-
 function markCompleted() {
   try {
     localStorage.setItem(FLAG, "1");
@@ -344,17 +336,8 @@ function startTour() {
 }
 
 /**
- * Entry point — called from app.js AFTER hydration so the trigger can
- * distinguish a genuine first visit ("fresh") from a shared link ("hash")
- * or a returning session ("recovered"), which both bypass the guide.
+ * Public entry point. This module is loaded as a lazy async chunk from
+ * app.js — either on the first-visit auto-trigger or when the header tour
+ * button is clicked — so onboarding code never weighs down initial boot.
  */
-export function initOnboarding(hydrationSource) {
-  // Header launcher: any user, any time, regardless of flags or data.
-  $("#tour-launch-btn")?.addEventListener("click", startTour);
-
-  if (hydrationSource !== "fresh" || isCompleted()) return;
-  // Idle-defer so the tour never competes with first-paint data rendering
-  const start = () => setTimeout(startTour, 400);
-  if ("requestIdleCallback" in window) requestIdleCallback(start, { timeout: 1500 });
-  else setTimeout(start, 600);
-}
+export { startTour };

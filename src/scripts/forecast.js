@@ -505,6 +505,19 @@ export function renderForecastDerived() {
 /* SVG EXPORT                                                        */
 /* ================================================================ */
 
+/**
+ * Vector compression pass for the exported asset: rounds sub-pixel
+ * coordinate noise to 2 decimals, strips comments, and collapses
+ * inter-tag whitespace — no visual change, meaningfully smaller file.
+ */
+function compressSvg(markup) {
+  return markup
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/(\d+\.\d{2})\d+/g, "$1")
+    .replace(/>\s+</g, "><")
+    .trim();
+}
+
 function exportSvg() {
   const svg = $("#burnup-mount svg");
   if (!svg) {
@@ -515,7 +528,7 @@ function exportSvg() {
   clone.setAttribute("xmlns", SVG_NS);
   clone.setAttribute("width", "720");
   clone.setAttribute("height", "400");
-  const blob = new Blob([new XMLSerializer().serializeToString(clone)], {
+  const blob = new Blob([compressSvg(new XMLSerializer().serializeToString(clone))], {
     type: "image/svg+xml;charset=utf-8",
   });
   const url = URL.createObjectURL(blob);

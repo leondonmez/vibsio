@@ -4,6 +4,8 @@
  * One route, driven entirely by the TOOL_PAGES dictionary; every page gets
  * canonical + OG + WebApplication schema via BaseLayout → SeoMetadata.
  */
+export const prerender = true;
+
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import SiteHeader from "../../components/SiteHeader.astro";
 import { TOOL_PAGES } from "../../data/toolPages.js";

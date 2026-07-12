@@ -35,7 +35,9 @@ import {
 } from "./workspaces.js";
 import { initForecast, refreshForecastUi } from "./forecast.js";
 import { initBlueprint, refreshBlueprintUi } from "./blueprint.js";
-import { initOnboarding } from "./onboarding.js";
+// Onboarding ships as its own lazy async chunk — never loaded unless a
+// first-timer arrives or the header tour button is clicked.
+const loadTour = () => import("./onboarding.js");
 import { initGovernance, refreshGovernanceUi } from "./governance.js";
 import { initIntegrations } from "./integrations.js";
 
@@ -527,7 +529,24 @@ async function boot() {
 
   // First-time visitors (fresh workspace, no completion flag) get the
   // interactive walkthrough; shared-link and returning sessions bypass it.
-  initOnboarding(source);
+  // The header button launches it for anyone, anytime.
+  $("#tour-launch-btn")?.addEventListener("click", async () => {
+    (await loadTour()).startTour();
+  });
+  let tourDone = true;
+  try {
+    tourDone = localStorage.getItem("vibs_onboarding_completed") === "1";
+  } catch {
+    /* storage unavailable — never nag */
+  }
+  if (source === "fresh" && !tourDone) {
+    const kick = () =>
+      setTimeout(async () => {
+        (await loadTour()).startTour();
+      }, 400);
+    if ("requestIdleCallback" in window) requestIdleCallback(kick, { timeout: 1500 });
+    else setTimeout(kick, 600);
+  }
 
   // Pasting a different share-link hash rehydrates the workspace live.
   window.addEventListener("hashchange", async () => {
