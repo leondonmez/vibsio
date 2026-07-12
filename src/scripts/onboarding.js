@@ -11,6 +11,7 @@
 import { getState, update } from "./state.js";
 import { applyMethodologyLabels } from "./methodology.js";
 import { refreshForecastUi } from "./forecast.js";
+import { setActiveTab } from "./tabs.js";
 
 const $ = (sel) => document.querySelector(sel);
 
@@ -74,24 +75,28 @@ const STEPS = [
   },
   {
     targets: ['[aria-labelledby="velocity-heading"]'],
+    tab: "quant",
     title: "Feed the quantitative engine",
     body: 'This grid is the numeric heart of the sandbox. Real teams drop a CSV export straight from their tracker into the drop-zone — for now, inject six <span data-term="cycle">Sprint</span>s of sample <span data-term="throughput">Velocity</span> and watch the whole dashboard wake up. Real history matters: our forecasts are built from what your team actually shipped, not what anyone hopes.',
     action: { label: "⚡ Load Sample Data", run: loadSampleData },
   },
   {
     targets: ["#creep-slider"],
+    tab: "quant",
     pad: 28,
     title: "Probability curves, not promises",
     body: 'Drag the Organic Scope Creep Simulator and watch the burnup re-project live. Here\'s the philosophy: a single delivery date is a statistical lie. The Monte Carlo engine replays your real <span data-term="throughput">Velocity</span> history 1,500 times to produce a probability spread — best case, expected, and the commitment-safe worst case — so your <span data-term="cycle">Sprint</span> milestones carry confidence levels instead of wishful thinking.',
   },
   {
     targets: ["#epic-input"],
+    tab: "blueprint",
     pad: 14,
     title: "Translate the messy epic",
     body: 'Paste a sprawling feature idea here. Pick your stack and team seniority above it, and the engine decomposes the concept into an estimated <span data-term="backlog">Product Backlog</span> — with acceptance criteria in your chosen syntax. A local filter scrubs secrets before anything is processed.',
   },
   {
     targets: ["#open-drawer-btn", "#generate-btn"],
+    tab: "blueprint",
     pad: 14,
     title: "Package it for your tracker",
     body: "When the blueprint is ready, the Integration Drawer compiles everything into clean Markdown checklists or a minified JSON array — paste-ready for Jira, Linear, Asana, or Azure DevOps. Only then does the plan touch your real boards: fully rehearsed, probability-checked, and shareable as a plain URL.",
@@ -213,6 +218,9 @@ function showStep(index) {
     action.classList.add("hidden");
     action.onclick = null;
   }
+
+  // Tab-aware anchoring: reveal the panel that owns this step's target
+  if (step.tab) setActiveTab(step.tab);
 
   $("#onboard-back").classList.toggle("invisible", current === 0);
   $("#onboard-next").textContent = current === STEPS.length - 1 ? "Start Planning ✨" : "Next →";

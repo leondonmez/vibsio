@@ -17,6 +17,7 @@ import ResourceOverlay from "../components/ResourceOverlay.astro";
 import TokenManager from "../components/TokenManager.astro";
 import OnboardingStep from "../components/OnboardingStep.astro";
 import MarketingHero from "../components/MarketingHero.astro";
+import WorkspaceTabs from "../components/WorkspaceTabs.astro";
 ---
 
 <BaseLayout>
@@ -53,6 +54,49 @@ import MarketingHero from "../components/MarketingHero.astro";
           </p>
         </section>
 
+        <!-- Centralized workspace tab navigator -->
+        <WorkspaceTabs />
+
+        <!-- ============ TAB 1: THE SIDE-BY-SIDE MATHEMATICAL COCKPIT ============ -->
+        <div
+          id="tab-panel-quant"
+          role="tabpanel"
+          aria-labelledby="tab-quant"
+          class="flex flex-col gap-5"
+        >
+          <div class="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] xl:items-start">
+            <!-- LEFT: the inputs -->
+            <div class="flex min-w-0 flex-col gap-5">
+              <VelocityGrid />
+              <ForecastControls />
+              <ResourceOverlay />
+            </div>
+            <!-- RIGHT: the visual payoff, pinned while inputs scroll -->
+            <div class="min-w-0 xl:sticky xl:top-28">
+              <BurnupChart />
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ TAB 2: THE ISOLATED REQUIREMENT ENGINE ============ -->
+        <div
+          id="tab-panel-blueprint"
+          role="tabpanel"
+          aria-labelledby="tab-blueprint"
+          class="hidden flex-col gap-5"
+        >
+          <RequirementHub />
+          <GenerationTerminal />
+          <BlueprintGrid />
+        </div>
+
+        <!-- ============ TAB 3: ADMINISTRATIVE PROJECT DETAILS ============ -->
+        <div
+          id="tab-panel-admin"
+          role="tabpanel"
+          aria-labelledby="tab-admin"
+          class="hidden flex-col gap-5"
+        >
         <!-- Project blueprint fields -->
         <section
           aria-labelledby="blueprint-heading"
@@ -194,21 +238,9 @@ import MarketingHero from "../components/MarketingHero.astro";
           </p>
         </section>
 
-        <!-- Layer 2: Quantitative Forecasting Engine -->
-        <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
-          <VelocityGrid />
-          <ForecastControls />
-        </div>
-        <ResourceOverlay />
-        <BurnupChart />
-
-        <!-- Layer 4: Governance & Compliance -->
+        <!-- Governance & Compliance -->
         <GovernancePanel />
-
-        <!-- Layer 3: Qualitative Requirement Blueprint Engine -->
-        <RequirementHub />
-        <GenerationTerminal />
-        <BlueprintGrid />
+        </div>
       </main>
     </div>
   </div>

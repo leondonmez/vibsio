@@ -35,6 +35,8 @@ import {
 } from "./workspaces.js";
 import { initForecast, refreshForecastUi } from "./forecast.js";
 import { initBlueprint, refreshBlueprintUi } from "./blueprint.js";
+import { initTabs } from "./tabs.js";
+
 // Onboarding ships as its own lazy async chunk — never loaded unless a
 // first-timer arrives or the header tour button is clicked.
 const loadTour = () => import("./onboarding.js");
@@ -513,6 +515,7 @@ async function boot() {
   initAuthUi();
   renderAuthIndicator();
   initSyncStatus();
+  initTabs();
   initForecast();
   initBlueprint();
   initGovernance();
