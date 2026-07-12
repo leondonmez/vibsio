@@ -59,6 +59,34 @@ function clearKeys() {
 }
 
 /* ---------------------------------------------------------------- */
+/* Live auth-state listener (SDK-compatible contract, zero SDK)      */
+/* ---------------------------------------------------------------- */
+
+const authListeners = new Set();
+
+/**
+ * Vanilla equivalent of supabase.auth.onAuthStateChange:
+ * cb(event, profile) fires with "INITIAL_SESSION" | "SIGNED_IN" |
+ * "TOKEN_REFRESHED" | "SIGNED_OUT". Returns an unsubscribe function.
+ */
+export function onAuthStateChange(cb) {
+  authListeners.add(cb);
+  return () => authListeners.delete(cb);
+}
+
+function emitAuth(event) {
+  const profile = getAuthProfile();
+  for (const cb of authListeners) {
+    try {
+      cb(event, profile);
+    } catch {
+      /* one bad listener must not break the chain */
+    }
+  }
+  document.dispatchEvent(new CustomEvent("vibsio:authchange", { detail: { event, profile } }));
+}
+
+/* ---------------------------------------------------------------- */
 /* Public state readers                                              */
 /* ---------------------------------------------------------------- */
 
@@ -99,7 +127,7 @@ export async function signOut() {
   const token = getAccessToken();
   clearTimeout(refreshTimer);
   clearKeys();
-  document.dispatchEvent(new CustomEvent("vibsio:authchange"));
+  emitAuth("SIGNED_OUT");
   if (token) {
     // Best-effort server-side revocation — local sign-out already happened.
     try {
@@ -148,7 +176,7 @@ export async function captureAuthCallback() {
   writeJson(LS_SESSION, session);
   writeJson(LS_PROFILE, profileFromUser(user));
   scheduleRefresh(session);
-  document.dispatchEvent(new CustomEvent("vibsio:authchange"));
+  emitAuth("SIGNED_IN");
   toast(`Signed in as ${profileFromUser(user).name} — cloud features unlocked.`);
   return true;
 }
@@ -209,6 +237,7 @@ async function refreshSession(session) {
     };
     writeJson(LS_SESSION, next);
     scheduleRefresh(next);
+    emitAuth("TOKEN_REFRESHED");
     return next;
   } catch {
     await signOut();
@@ -224,12 +253,13 @@ export async function ensureFreshSession() {
     // A profile without a session is stale (e.g. cleared elsewhere) — drop it.
     if (getAuthProfile()) {
       clearKeys();
-      document.dispatchEvent(new CustomEvent("vibsio:authchange"));
+      emitAuth("SIGNED_OUT");
     }
     return null;
   }
   if (Date.now() < session.expires_at - 60_000) {
     scheduleRefresh(session);
+    emitAuth("INITIAL_SESSION");
     return session;
   }
   return refreshSession(session);

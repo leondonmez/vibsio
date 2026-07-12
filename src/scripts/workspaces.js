@@ -7,9 +7,21 @@
  * workspace is just "put its payload in the hash and rehydrate".
  */
 
+import { getAuthProfile } from "./auth.js";
+
 const LS_INDEX = "vibsio:workspaces";
 const LS_SESSION_ID = "vibsio:session:id";
 const MAX_WORKSPACES = 30;
+
+/**
+ * Authenticated users get their workspace history indexed under their
+ * Supabase user UUID, so records stay separated per account across
+ * sessions on the same machine; guests use the shared local index.
+ */
+function indexKey() {
+  const id = getAuthProfile()?.id;
+  return id ? `${LS_INDEX}:${id}` : LS_INDEX;
+}
 
 export function currentSessionId() {
   let id = null;
@@ -31,7 +43,7 @@ export function currentSessionId() {
 
 export function readIndex() {
   try {
-    const raw = localStorage.getItem(LS_INDEX);
+    const raw = localStorage.getItem(indexKey());
     if (!raw) return [];
     const list = JSON.parse(raw);
     if (!Array.isArray(list)) return [];
@@ -49,7 +61,7 @@ export function readIndex() {
 
 function writeIndex(list) {
   try {
-    localStorage.setItem(LS_INDEX, JSON.stringify(list.slice(0, MAX_WORKSPACES)));
+    localStorage.setItem(indexKey(), JSON.stringify(list.slice(0, MAX_WORKSPACES)));
   } catch {
     /* storage full — history is a convenience layer, never fatal */
   }

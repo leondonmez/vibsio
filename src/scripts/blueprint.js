@@ -18,11 +18,11 @@ import {
   seniorityLabel,
   tagLabel,
 } from "../utils/clipboardPackager.js";
-import { AUTH_STATES, getAuthState, getAccessToken } from "./auth.js";
+import { AUTH_STATES, getAuthState } from "./auth.js";
 import { activeDirectives } from "../utils/complianceProfiles.js";
+import { streamBlueprint, parseBlueprintText } from "../utils/apiClient.js";
 
 const $ = (sel) => document.querySelector(sel);
-const CLOUD_ENDPOINT = "/api/blueprint";
 
 /* ================================================================ */
 /* CONTROLS — stack, seniority, syntax bind straight into state.r    */
@@ -224,40 +224,25 @@ function synthesizeBlueprint({ epic, stack, seniority, syntax, compliance }) {
 }
 
 /* ================================================================ */
-/* CLOUD PIPELINE — serverless NDJSON stream                         */
+/* CLOUD PIPELINE — Edge Function SSE token stream                   */
 /* ================================================================ */
 
-async function cloudGenerate(payload) {
-  const token = getAccessToken();
-  const res = await fetch(CLOUD_ENDPOINT, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok || !res.body) throw new Error(`endpoint returned ${res.status}`);
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-  let tasks = null;
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buffer += decoder.decode(value, { stream: true });
-    let nl;
-    while ((nl = buffer.indexOf("\n")) >= 0) {
-      const line = buffer.slice(0, nl).trim();
-      buffer = buffer.slice(nl + 1);
-      if (!line) continue;
-      const evt = JSON.parse(line);
-      if (evt.type === "log") await termType(evt.text, "dim");
-      if (evt.type === "done") tasks = evt.tasks;
+let streamLine = null;
+
+/** Map raw model tokens into the terminal view as they arrive. */
+function termStreamToken(text) {
+  const out = $("#terminal-output");
+  if (!out) return;
+  const parts = String(text).split("\n");
+  for (let i = 0; i < parts.length; i += 1) {
+    if (i > 0) streamLine = null;
+    if (!streamLine) {
+      streamLine = termLineEl("", "task");
+      out.append(streamLine);
     }
+    streamLine.textContent += parts[i];
   }
-  if (!tasks) throw new Error("stream ended without a tasks payload");
-  return tasks;
+  out.scrollTop = out.scrollHeight;
 }
 
 /* ================================================================ */
@@ -302,12 +287,18 @@ async function generate() {
       compliance,
     };
 
-    // 2. Cloud stream for authenticated users; local synthesis otherwise
+    // 2. Cloud SSE stream for authenticated users; local synthesis otherwise
     let tasks = null;
+    let streamed = false;
     if (getAuthState() !== AUTH_STATES.GUEST) {
       await termType("→ Contacting serverless orchestration endpoint…", "dim");
       try {
-        tasks = await cloudGenerate(payload);
+        streamLine = null;
+        const text = await streamBlueprint(payload, { onToken: termStreamToken });
+        const parsed = parseBlueprintText(text);
+        if (parsed.core.length === 0) throw new Error("model returned no parseable tasks");
+        tasks = parsed;
+        streamed = true;
         await termType("→ Cloud stream complete.", "ok");
       } catch (err) {
         await termType(`→ Cloud endpoint unavailable (${err.message}) — engaging local synthesis engine.`, "warn");
@@ -320,10 +311,12 @@ async function generate() {
       tasks = synthesizeBlueprint(payload);
     }
 
-    // 3. Stream the task lines into the terminal
-    await termType(`→ Decomposing epic for a ${seniorityLabel(r.seniority)} on ${stackLabel(r.stack)}:`, "default");
-    for (const t of tasks.core) await termType(`  [CORE] ${t.t.split("\n")[0]}`, "task");
-    for (const t of tasks.cross) await termType(`  [${tagLabel(t.tag ?? "eng").split(" ")[0].toUpperCase()}] ${t.t.split("\n")[0]}`, "task");
+    // 3. Echo task lines into the terminal (cloud runs already streamed live)
+    if (!streamed) {
+      await termType(`→ Decomposing epic for a ${seniorityLabel(r.seniority)} on ${stackLabel(r.stack)}:`, "default");
+      for (const t of tasks.core) await termType(`  [CORE] ${t.t.split("\n")[0]}`, "task");
+      for (const t of tasks.cross) await termType(`  [${tagLabel(t.tag ?? "eng").split(" ")[0].toUpperCase()}] ${t.t.split("\n")[0]}`, "task");
+    }
     await termType(`✓ Blueprint compiled — ${tasks.core.length} core + ${tasks.cross.length} cross-functional tasks. Synced to URL.`, "ok");
 
     // 4. Commit to hash-synced state and render the matrix

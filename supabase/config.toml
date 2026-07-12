@@ -1,0 +1,6 @@
+project_id = "vibsio"
+
+[functions.orchestrate-blueprint]
+# JWT is additionally verified inside the function against GoTrue;
+# platform-level verification stays on as the first gate.
+verify_jwt = true

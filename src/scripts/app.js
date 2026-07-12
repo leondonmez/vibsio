@@ -22,6 +22,7 @@ import {
   signOut,
   captureAuthCallback,
   ensureFreshSession,
+  onAuthStateChange,
 } from "./auth.js";
 import {
   currentSessionId,
@@ -480,6 +481,14 @@ async function boot() {
   initTheme();
   // Toast listener first — auth callback capture below emits toasts.
   document.addEventListener("vibsio:toast", (e) => toast(e.detail.message));
+
+  // Live session bridge: any auth transition (sign-in, refresh, sign-out)
+  // re-renders the 3-state indicator AND re-scopes the workspace sidebar to
+  // the signed-in user's own history index.
+  onAuthStateChange(() => {
+    renderAuthIndicator();
+    renderSidebar();
+  });
 
   // OAuth callback tokens arrive in the URL hash — the same slot the state
   // engine owns. Capture + strip them BEFORE hydrate() reads the hash; the
