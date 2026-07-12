@@ -72,7 +72,7 @@ export async function launchDemo() {
   const target = `#${payload}`;
   if (location.hash === target) {
     // Already loaded — just take the user to the live workspace
-    document.querySelector("#main")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document.getElementById("main")?.scrollTo({ top: 0, behavior: "smooth" });
     return;
   }
   location.hash = payload; // hashchange → full rehydration of every module
@@ -84,6 +84,6 @@ export async function launchDemo() {
     }),
   );
   requestAnimationFrame(() => {
-    document.querySelector("#main")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document.getElementById("main")?.scrollTo({ top: 0, behavior: "smooth" });
   });
 }

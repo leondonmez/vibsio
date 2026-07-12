@@ -21,37 +21,41 @@ import WorkspaceTabs from "../components/WorkspaceTabs.astro";
 ---
 
 <BaseLayout>
-  <SiteHeader />
-  <MarketingHero />
+  <!-- 100vh cockpit shell: fixed viewport on desktop, natural scroll on mobile -->
+  <div class="flex min-h-screen flex-col lg:h-screen lg:overflow-hidden">
+    <SiteHeader />
 
-  <div class="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:py-6">
-    <div class="flex flex-col gap-5 lg:grid lg:grid-cols-[280px_1fr] lg:items-start lg:gap-6">
+    <!-- Hero: anonymous first-time visitors only; app.js reveals + collapses -->
+    <MarketingHero />
+
+    <div class="flex min-h-0 flex-1 flex-col lg:flex-row">
       <WorkspaceSidebar />
 
-      <main id="main" class="flex min-w-0 flex-col gap-5">
-        <!-- Session identity -->
+      <main id="main" class="flex min-w-0 flex-1 flex-col gap-3 px-4 py-3 sm:px-5 lg:overflow-y-auto">
+        <!-- Session identity (compact) -->
         <section
           aria-labelledby="session-heading"
-          class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
+          class="rounded-xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900"
         >
           <h2 id="session-heading" class="sr-only">Current planning workspace</h2>
-          <label
-            for="session-name"
-            class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400"
-          >
-            Workspace Name
-          </label>
-          <input
-            id="session-name"
-            type="text"
-            maxlength="120"
-            placeholder="Untitled Blueprint"
-            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-lg font-semibold text-slate-900 placeholder:text-slate-400 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-600"
-          />
-          <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">
-            Every change is compressed into the URL in real time — the address
-            bar <em>is</em> your save file.
-          </p>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <label
+              for="session-name"
+              class="text-[10px] font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400"
+            >
+              Workspace
+            </label>
+            <input
+              id="session-name"
+              type="text"
+              maxlength="120"
+              placeholder="Untitled Blueprint"
+              class="min-w-0 flex-1 rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-base font-semibold text-slate-900 placeholder:text-slate-400 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-600"
+            />
+            <p class="hidden text-[11px] text-slate-400 md:block dark:text-slate-500">
+              Synced to the URL in real time — the address bar <em>is</em> your save file.
+            </p>
+          </div>
         </section>
 
         <!-- Centralized workspace tab navigator -->
@@ -62,17 +66,19 @@ import WorkspaceTabs from "../components/WorkspaceTabs.astro";
           id="tab-panel-quant"
           role="tabpanel"
           aria-labelledby="tab-quant"
-          class="flex flex-col gap-5"
+          class="flex flex-col gap-3"
         >
-          <div class="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] xl:items-start">
-            <!-- LEFT: the inputs -->
-            <div class="flex min-w-0 flex-col gap-5">
+          <div class="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,5fr)_minmax(0,4fr)] xl:items-start">
+            <!-- LEFT: history + configuration side-by-side, parallel to the chart -->
+            <div class="grid min-w-0 grid-cols-1 gap-3 lg:grid-cols-2">
               <VelocityGrid />
               <ForecastControls />
-              <ResourceOverlay />
+              <div class="lg:col-span-2">
+                <ResourceOverlay />
+              </div>
             </div>
-            <!-- RIGHT: the visual payoff, pinned while inputs scroll -->
-            <div class="min-w-0 xl:sticky xl:top-28">
+            <!-- RIGHT: the visual payoff, pinned inside the scroller -->
+            <div class="min-w-0 xl:sticky xl:top-11">
               <BurnupChart />
             </div>
           </div>
@@ -83,11 +89,17 @@ import WorkspaceTabs from "../components/WorkspaceTabs.astro";
           id="tab-panel-blueprint"
           role="tabpanel"
           aria-labelledby="tab-blueprint"
-          class="hidden flex-col gap-5"
+          class="hidden flex-col gap-3"
         >
-          <RequirementHub />
-          <GenerationTerminal />
-          <BlueprintGrid />
+          <div class="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] xl:items-start">
+            <div class="flex min-w-0 flex-col gap-3">
+              <RequirementHub />
+              <GenerationTerminal />
+            </div>
+            <div class="min-w-0">
+              <BlueprintGrid />
+            </div>
+          </div>
         </div>
 
         <!-- ============ TAB 3: ADMINISTRATIVE PROJECT DETAILS ============ -->
@@ -95,163 +107,163 @@ import WorkspaceTabs from "../components/WorkspaceTabs.astro";
           id="tab-panel-admin"
           role="tabpanel"
           aria-labelledby="tab-admin"
-          class="hidden flex-col gap-5"
+          class="hidden flex-col gap-3"
         >
-        <!-- Project blueprint fields -->
-        <section
-          aria-labelledby="blueprint-heading"
-          class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
-        >
-          <h2
-            id="blueprint-heading"
-            class="mb-4 text-sm font-semibold text-slate-900 dark:text-slate-100"
-          >
-            Project Blueprint
-          </h2>
-          <div class="grid gap-4 sm:grid-cols-2">
-            <div class="sm:col-span-2">
-              <label for="p-title" class="mb-1.5 block text-xs font-medium text-slate-600 dark:text-slate-400">
-                Project Title
-              </label>
-              <input
-                id="p-title"
-                data-bind="p.title"
-                type="text"
-                maxlength="200"
-                placeholder="What are we building?"
-                class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950"
-              />
+          <!-- Metrics strip -->
+          <section aria-label="Workspace metrics" class="grid grid-cols-3 gap-3">
+            <div class="rounded-lg border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <p class="truncate text-xs font-medium text-slate-500 dark:text-slate-400" data-term="metricItems">
+                Stories in Backlog
+              </p>
+              <p id="metric-items" class="mt-0.5 text-xl font-bold tracking-tight">0</p>
             </div>
-            <div class="sm:col-span-2">
-              <label for="p-objective" class="mb-1.5 block text-xs font-medium text-slate-600 dark:text-slate-400">
-                Objective
-              </label>
-              <textarea
-                id="p-objective"
-                data-bind="p.objective"
-                rows="3"
-                maxlength="2000"
-                placeholder="The outcome that makes this project a win…"
-                class="w-full resize-y rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950"
-              ></textarea>
+            <div class="rounded-lg border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <p class="truncate text-xs font-medium text-slate-500 dark:text-slate-400" data-term="metricEffort">
+                Total Story Points
+              </p>
+              <p id="metric-effort" class="mt-0.5 text-xl font-bold tracking-tight">0</p>
             </div>
-            <div>
-              <label for="p-start" class="mb-1.5 block text-xs font-medium text-slate-600 dark:text-slate-400">
-                <span data-term="cycle">Sprint</span> Start Date
-              </label>
-              <input
-                id="p-start"
-                data-bind="p.start"
-                type="date"
-                class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950"
-              />
+            <div class="rounded-lg border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <p class="truncate text-xs font-medium text-slate-500 dark:text-slate-400" data-term="metricDone">
+                Sprint Completion
+              </p>
+              <p id="metric-done" class="mt-0.5 text-xl font-bold tracking-tight">0%</p>
             </div>
-            <div>
-              <label for="p-owner" class="mb-1.5 block text-xs font-medium text-slate-600 dark:text-slate-400">
-                <span data-term="lead">Scrum Master</span>
-              </label>
-              <input
-                id="p-owner"
-                data-bind="p.owner"
-                type="text"
-                maxlength="120"
-                placeholder="Who keeps this on track?"
-                class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950"
-              />
-            </div>
-          </div>
-        </section>
+          </section>
 
-        <!-- Metrics strip -->
-        <section aria-label="Workspace metrics" class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <p class="text-xs font-medium text-slate-500 dark:text-slate-400" data-term="metricItems">
-              Stories in Backlog
-            </p>
-            <p id="metric-items" class="mt-1 text-2xl font-bold tracking-tight">0</p>
-          </div>
-          <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <p class="text-xs font-medium text-slate-500 dark:text-slate-400" data-term="metricEffort">
-              Total Story Points
-            </p>
-            <p id="metric-effort" class="mt-1 text-2xl font-bold tracking-tight">0</p>
-          </div>
-          <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <p class="text-xs font-medium text-slate-500 dark:text-slate-400" data-term="metricDone">
-              Sprint Completion
-            </p>
-            <p id="metric-done" class="mt-1 text-2xl font-bold tracking-tight">0%</p>
-          </div>
-        </section>
-
-        <!-- Item board -->
-        <section
-          aria-labelledby="board-heading"
-          class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900"
-        >
-          <div class="mb-1 flex items-baseline justify-between gap-3">
-            <h2 id="board-heading" class="text-sm font-semibold text-slate-900 dark:text-slate-100" data-term="board">
-              Sprint Board
-            </h2>
-            <span class="text-xs text-slate-400 dark:text-slate-500" data-term="backlog">Product Backlog</span>
-          </div>
-          <p class="mb-4 text-xs text-slate-500 dark:text-slate-400" data-term="boardHint">
-            Capture user stories, point them, and pull them into the sprint.
-          </p>
-
-          <form id="item-form" class="mb-4 flex flex-col gap-2 sm:flex-row">
-            <label for="item-title" class="sr-only">New item title</label>
-            <input
-              id="item-title"
-              type="text"
-              maxlength="200"
-              required
-              data-term-ph="itemPlaceholder"
-              placeholder="e.g. As a user, I can share my board via link…"
-              class="min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950"
-            />
-            <label for="item-effort" class="sr-only">Effort estimate</label>
-            <input
-              id="item-effort"
-              type="number"
-              min="0"
-              max="9999"
-              data-term-ph="effort"
-              placeholder="Story Points"
-              class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm sm:w-36 dark:border-slate-700 dark:bg-slate-950"
-            />
-            <button
-              type="submit"
-              class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500"
-              data-term="addItem"
+          <div class="grid grid-cols-1 gap-3 xl:grid-cols-2 xl:items-start">
+            <!-- Project blueprint fields -->
+            <section
+              aria-labelledby="blueprint-heading"
+              class="rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm sm:p-4 dark:border-slate-800 dark:bg-slate-900"
             >
-              Add User Story
-            </button>
-          </form>
+              <h2
+                id="blueprint-heading"
+                class="mb-2.5 text-sm font-semibold text-slate-900 dark:text-slate-100"
+              >
+                Project Blueprint
+              </h2>
+              <div class="grid gap-3 sm:grid-cols-2">
+                <div class="sm:col-span-2">
+                  <label for="p-title" class="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">
+                    Project Title
+                  </label>
+                  <input
+                    id="p-title"
+                    data-bind="p.title"
+                    type="text"
+                    maxlength="200"
+                    placeholder="What are we building?"
+                    class="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-sm dark:border-slate-700 dark:bg-slate-950"
+                  />
+                </div>
+                <div class="sm:col-span-2">
+                  <label for="p-objective" class="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">
+                    Objective
+                  </label>
+                  <textarea
+                    id="p-objective"
+                    data-bind="p.objective"
+                    rows="2"
+                    maxlength="2000"
+                    placeholder="The outcome that makes this project a win…"
+                    class="w-full resize-y rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-sm dark:border-slate-700 dark:bg-slate-950"
+                  ></textarea>
+                </div>
+                <div>
+                  <label for="p-start" class="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">
+                    <span data-term="cycle">Sprint</span> Start Date
+                  </label>
+                  <input
+                    id="p-start"
+                    data-bind="p.start"
+                    type="date"
+                    class="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-sm dark:border-slate-700 dark:bg-slate-950"
+                  />
+                </div>
+                <div>
+                  <label for="p-owner" class="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">
+                    <span data-term="lead">Scrum Master</span>
+                  </label>
+                  <input
+                    id="p-owner"
+                    data-bind="p.owner"
+                    type="text"
+                    maxlength="120"
+                    placeholder="Who keeps this on track?"
+                    class="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-sm dark:border-slate-700 dark:bg-slate-950"
+                  />
+                </div>
+              </div>
+            </section>
 
-          <ul id="item-list" class="flex flex-col gap-2" role="list"></ul>
-          <p
-            id="board-empty"
-            class="rounded-lg border border-dashed border-slate-300 px-4 py-8 text-center text-sm text-slate-400 dark:border-slate-700 dark:text-slate-500"
-          >
-            Nothing here yet — add your first item above.
-          </p>
-        </section>
+            <!-- Item board -->
+            <section
+              aria-labelledby="board-heading"
+              class="rounded-xl border border-slate-200 bg-white p-3.5 shadow-sm sm:p-4 dark:border-slate-800 dark:bg-slate-900"
+            >
+              <div class="mb-1 flex items-baseline justify-between gap-3">
+                <h2 id="board-heading" class="text-sm font-semibold text-slate-900 dark:text-slate-100" data-term="board">
+                  Sprint Board
+                </h2>
+                <span class="text-xs text-slate-400 dark:text-slate-500" data-term="backlog">Product Backlog</span>
+              </div>
+              <p class="mb-2.5 text-xs text-slate-500 dark:text-slate-400" data-term="boardHint">
+                Capture user stories, point them, and pull them into the sprint.
+              </p>
 
-        <!-- Governance & Compliance -->
-        <GovernancePanel />
+              <form id="item-form" class="mb-2.5 flex flex-col gap-2 sm:flex-row">
+                <label for="item-title" class="sr-only">New item title</label>
+                <input
+                  id="item-title"
+                  type="text"
+                  maxlength="200"
+                  required
+                  data-term-ph="itemPlaceholder"
+                  placeholder="e.g. As a user, I can share my board via link…"
+                  class="min-w-0 flex-1 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-sm dark:border-slate-700 dark:bg-slate-950"
+                />
+                <label for="item-effort" class="sr-only">Effort estimate</label>
+                <input
+                  id="item-effort"
+                  type="number"
+                  min="0"
+                  max="9999"
+                  data-term-ph="effort"
+                  placeholder="Story Points"
+                  class="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-sm sm:w-32 dark:border-slate-700 dark:bg-slate-950"
+                />
+                <button
+                  type="submit"
+                  class="rounded-lg bg-indigo-600 px-3.5 py-1.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-500"
+                  data-term="addItem"
+                >
+                  Add User Story
+                </button>
+              </form>
+
+              <ul id="item-list" class="flex flex-col gap-1.5" role="list"></ul>
+              <p
+                id="board-empty"
+                class="rounded-lg border border-dashed border-slate-300 px-4 py-4 text-center text-sm text-slate-400 dark:border-slate-700 dark:text-slate-500"
+              >
+                Nothing here yet — add your first item above.
+              </p>
+            </section>
+          </div>
+
+          <!-- Governance & Compliance -->
+          <GovernancePanel />
         </div>
+
+        <p class="pb-1 pt-2 text-[10px] text-slate-400 dark:text-slate-600">
+          vibs.io — your plan lives in the URL. No account required.
+          · <a href="/privacy" class="hover:underline">Privacy</a>
+          · <a href="/terms" class="hover:underline">Terms</a>
+        </p>
       </main>
     </div>
   </div>
-
-  <footer class="border-t border-slate-200 py-6 dark:border-slate-800">
-    <p class="mx-auto max-w-7xl px-4 text-xs text-slate-400 sm:px-6 dark:text-slate-500">
-      vibs.io — your plan lives in the URL. No account required for the local sandbox.
-      · <a href="/privacy" class="hover:underline">Privacy</a>
-      · <a href="/terms" class="hover:underline">Terms</a>
-    </p>
-  </footer>
 
   <AuthGateModal />
   <IntegrationDrawer />

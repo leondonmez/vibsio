@@ -68,7 +68,9 @@ function loadSampleData() {
 
 const STEPS = [
   {
-    targets: ["#marketing-hero"],
+    // Hero only exists for anonymous first-timers — returning users get the
+    // workspace title card as the welcome anchor instead.
+    targets: ["#marketing-hero", '[aria-labelledby="session-heading"]'],
     pad: 0,
     title: "Welcome to the pre-flight sandbox",
     body: "This is where plans get stress-tested BEFORE they touch your live Jira or Linear boards. Everything you're about to build is stateless — the entire workspace compresses into the URL in your address bar, so there's nothing to set up and nothing to leak. Let's walk the four stations of the engine.",

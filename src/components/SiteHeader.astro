@@ -1,32 +1,30 @@
 ---
 /**
- * Global header: brand, Multi-Methodology Engine selector, 3-state auth
- * indicator, sign-in trigger, and the light/dark theme toggle.
+ * Global header — elite B2B commercial platform chrome.
+ * Brand · Multi-Methodology Engine · workspace tier indicator dropdown ·
+ * "Upgrade to Enterprise Pro" accent CTA · profile group · theme + tour.
+ * Tier label + dropdown wiring live in app.js.
  */
 ---
 
 <header
-  class="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur dark:border-slate-800 dark:bg-slate-950/80"
+  class="z-40 shrink-0 border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90"
 >
-  <div class="mx-auto flex h-14 max-w-7xl items-center gap-3 px-4 sm:gap-4 sm:px-6">
+  <div class="flex h-12 items-center gap-2 px-4 sm:gap-3 sm:px-5">
     <a href="/" class="flex items-center gap-2" aria-label="vibs.io home">
       <span
-        class="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-sm font-bold text-white"
+        class="flex h-6.5 w-6.5 items-center justify-center rounded-md bg-indigo-600 text-sm font-bold text-white"
         aria-hidden="true">v</span
       >
-      <span class="text-sm font-semibold tracking-tight sm:text-base">vibs.io</span>
-      <span
-        class="hidden rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500 sm:inline dark:bg-slate-800 dark:text-slate-400"
-        >Planning Sandbox</span
-      >
+      <span class="text-sm font-semibold tracking-tight">vibs.io</span>
     </a>
 
-    <!-- Multi-Methodology Engine -->
-    <div class="ml-auto flex items-center gap-2 sm:gap-3">
+    <div class="ml-auto flex items-center gap-1.5 sm:gap-2">
+      <!-- Multi-Methodology Engine -->
       <label for="methodology-select" class="sr-only">Multi-Methodology Engine</label>
       <select
         id="methodology-select"
-        class="rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-sm sm:text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+        class="h-8 rounded-md border border-slate-300 bg-white px-2 text-xs font-medium text-slate-700 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
         title="Multi-Methodology Engine — re-labels the whole workspace"
       >
         <option value="scrum">Scrum</option>
@@ -34,23 +32,76 @@
         <option value="pmo">Traditional PMO</option>
       </select>
 
-      <!-- 3-state auth indicator (populated by app.js) -->
-      <span
-        id="auth-indicator"
-        class="hidden max-w-44 items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 sm:flex dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
-      ></span>
+      <!-- Workspace tier indicator + premium preview dropdown -->
+      <div class="relative hidden md:block">
+        <button
+          id="tier-btn"
+          type="button"
+          aria-haspopup="true"
+          aria-expanded="false"
+          class="flex h-8 max-w-72 items-center gap-1.5 rounded-md border border-slate-300 bg-slate-50 px-2.5 text-xs font-medium text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
+        >
+          <span id="tier-dot" class="h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400" aria-hidden="true"></span>
+          <img id="tier-avatar" src="" alt="" referrerpolicy="no-referrer" class="hidden h-4 w-4 shrink-0 rounded-full" />
+          <span id="tier-label" class="truncate">Workspace: Personal Sandbox (Free Tier)</span>
+          <svg class="h-3 w-3 shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
+          </svg>
+        </button>
 
+        <div
+          id="tier-menu"
+          class="absolute right-0 top-10 z-50 hidden w-72 rounded-xl border border-slate-200 bg-white p-4 shadow-2xl dark:border-slate-700 dark:bg-slate-900"
+        >
+          <p class="text-xs font-bold text-slate-900 dark:text-slate-100">Enterprise Pro unlocks</p>
+          <ul class="mt-2.5 flex flex-col gap-2 text-xs text-slate-600 dark:text-slate-400" role="list">
+            <li class="flex items-start gap-2">
+              <span class="text-indigo-500" aria-hidden="true">◆</span>
+              <span><strong class="text-slate-800 dark:text-slate-200">Multi-Team Syncing</strong> — shared workspaces with live merge across squads</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-indigo-500" aria-hidden="true">◆</span>
+              <span><strong class="text-slate-800 dark:text-slate-200">Cloud Persistence</strong> — plans stored beyond the URL, versioned and restorable</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <span class="text-indigo-500" aria-hidden="true">◆</span>
+              <span><strong class="text-slate-800 dark:text-slate-200">Advanced Compliance Logs</strong> — exportable DoD audit trails per release</span>
+            </li>
+          </ul>
+          <button
+            id="tier-upgrade-cta"
+            type="button"
+            class="mt-3.5 w-full rounded-lg bg-indigo-600 px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-indigo-500"
+          >
+            Upgrade to Enterprise Pro
+          </button>
+          <p class="mt-2 text-center text-[10px] text-slate-400 dark:text-slate-500">
+            The personal sandbox stays free forever.
+          </p>
+        </div>
+      </div>
+
+      <!-- Upgrade accent CTA -->
+      <button
+        id="upgrade-btn"
+        type="button"
+        class="hidden h-8 items-center rounded-md border-2 border-indigo-600 px-2.5 text-xs font-bold text-indigo-600 transition hover:bg-indigo-600 hover:text-white sm:flex dark:border-indigo-400 dark:text-indigo-400 dark:hover:bg-indigo-500 dark:hover:text-white"
+      >
+        Upgrade to Enterprise Pro
+      </button>
+
+      <!-- Profile group -->
       <button
         id="auth-signin-btn"
         type="button"
-        class="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-500 sm:text-sm"
+        class="h-8 rounded-md bg-indigo-600 px-3 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-500"
       >
         Sign in
       </button>
       <button
         id="auth-signout-btn"
         type="button"
-        class="hidden rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-100 sm:text-sm dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+        class="hidden h-8 rounded-md border border-slate-300 px-2.5 text-xs font-medium text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
       >
         Sign out
       </button>
@@ -61,37 +112,13 @@
         type="button"
         aria-pressed="false"
         aria-label="Toggle dark mode"
-        class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+        class="flex h-8 w-8 items-center justify-center rounded-md border border-slate-300 text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
       >
-        <svg
-          id="theme-icon-moon"
-          class="hidden h-4 w-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-          aria-hidden="true"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-          ></path>
+        <svg id="theme-icon-moon" class="hidden h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
         </svg>
-        <svg
-          id="theme-icon-sun"
-          class="h-4 w-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          stroke-width="2"
-          aria-hidden="true"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M12 3v1.5m6.364.636l-1.06 1.06M21 12h-1.5m-.636 6.364l-1.06-1.06M12 19.5V21m-6.364-2.136l1.06-1.06M4.5 12H3m2.136-6.364l1.06 1.06M12 8.25a3.75 3.75 0 100 7.5 3.75 3.75 0 000-7.5z"
-          ></path>
+        <svg id="theme-icon-sun" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1.5m6.364.636l-1.06 1.06M21 12h-1.5m-.636 6.364l-1.06-1.06M12 19.5V21m-6.364-2.136l1.06-1.06M4.5 12H3m2.136-6.364l1.06 1.06M12 8.25a3.75 3.75 0 100 7.5 3.75 3.75 0 000-7.5z"></path>
         </svg>
       </button>
 
@@ -101,9 +128,9 @@
         type="button"
         aria-label="Launch the guided tour"
         title="Guided tour"
-        class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+        class="flex h-8 w-8 items-center justify-center rounded-md border border-slate-300 text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
       >
-        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path
             stroke-linecap="round"
             stroke-linejoin="round"

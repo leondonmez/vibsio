@@ -241,7 +241,7 @@ function renderSidebar() {
   for (const entry of entries) {
     const li = document.createElement("li");
     const isActive = entry.id === activeId;
-    li.className = `group rounded-lg border px-3 py-2.5 transition ${
+    li.className = `group rounded-md border px-2 py-1.5 transition ${
       isActive
         ? "border-indigo-300 bg-indigo-50 dark:border-indigo-800 dark:bg-indigo-950/50"
         : "border-transparent hover:border-slate-200 hover:bg-slate-50 dark:hover:border-slate-800 dark:hover:bg-slate-900"
@@ -255,7 +255,7 @@ function renderSidebar() {
     loadBtn.textContent = entry.name || "Untitled Blueprint";
     loadBtn.title = "Load this workspace";
     loadBtn.className =
-      "min-w-0 flex-1 truncate text-left text-sm font-medium text-slate-800 hover:text-indigo-600 dark:text-slate-200 dark:hover:text-indigo-400";
+      "min-w-0 flex-1 truncate text-left text-[13px] font-medium text-slate-800 hover:text-indigo-600 dark:text-slate-200 dark:hover:text-indigo-400";
     loadBtn.addEventListener("click", () => loadWorkspace(entry));
 
     const renameBtn = document.createElement("button");
@@ -279,7 +279,7 @@ function renderSidebar() {
     nameRow.append(loadBtn, renameBtn, delBtn);
 
     const meta = document.createElement("p");
-    meta.className = "mt-0.5 text-[11px] text-slate-500 dark:text-slate-400";
+    meta.className = "text-[10px] text-slate-500 dark:text-slate-400";
     meta.textContent = `${METHODOLOGIES[entry.m]?.label ?? "Scrum"} · ${formatWhen(entry.updatedAt ?? Date.now())}`;
 
     li.append(nameRow, meta);
@@ -355,44 +355,103 @@ function initSidebarActions() {
 /* ================================================================ */
 
 function renderAuthIndicator() {
-  const wrap = $("#auth-indicator");
-  if (!wrap) return;
+  const label = $("#tier-label");
+  const dot = $("#tier-dot");
+  const avatar = $("#tier-avatar");
+  const btn = $("#tier-btn");
+  if (!label || !dot) return;
   const authState = getAuthState();
   const profile = getAuthProfile();
-  wrap.replaceChildren();
-
-  const dot = document.createElement("span");
-  dot.setAttribute("aria-hidden", "true");
-  const label = document.createElement("span");
-  label.className = "truncate";
 
   if (authState === AUTH_STATES.GUEST) {
-    dot.className = "h-2 w-2 shrink-0 rounded-full bg-slate-400";
-    label.textContent = "Local Sandbox";
-    wrap.title = "Guest mode — your workspace lives entirely in this URL and this browser.";
+    dot.className = "h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400";
+    label.textContent = "Workspace: Personal Sandbox (Free Tier)";
+    if (btn) btn.title = "Guest mode — your workspace lives entirely in this URL and this browser.";
   } else if (authState === AUTH_STATES.FREE) {
-    dot.className = "h-2 w-2 shrink-0 rounded-full bg-emerald-500";
-    label.textContent = `${profile?.name ?? "Signed in"} · Cloud`;
-    wrap.title = "Signed in — workspaces are cloud-backed.";
+    dot.className = "h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500";
+    label.textContent = `Workspace: ${profile?.name?.split(" ")[0] ?? "Personal"} Cloud (Free Tier)`;
+    if (btn) btn.title = "Signed in — cloud features unlocked.";
   } else {
-    dot.className = "h-2 w-2 shrink-0 rounded-full bg-amber-400";
-    label.textContent = `${profile?.name ?? "Signed in"} · Premium`;
-    wrap.title = "Premium — enterprise features unlocked.";
+    dot.className = "h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400";
+    label.textContent = `Workspace: ${profile?.name?.split(" ")[0] ?? "Team"} (Enterprise Pro)`;
+    if (btn) btn.title = "Enterprise Pro — premium capabilities active.";
   }
-  if (profile?.avatar) {
-    const img = document.createElement("img");
-    img.src = profile.avatar;
-    img.alt = "";
-    img.referrerPolicy = "no-referrer";
-    img.className = "h-4.5 w-4.5 shrink-0 rounded-full";
-    wrap.append(img);
+  if (avatar) {
+    const has = Boolean(profile?.avatar);
+    avatar.classList.toggle("hidden", !has);
+    if (has && avatar.src !== profile.avatar) avatar.src = profile.avatar;
   }
-  wrap.append(dot, label);
 
   const signinBtn = $("#auth-signin-btn");
   const signoutBtn = $("#auth-signout-btn");
   signinBtn?.classList.toggle("hidden", authState !== AUTH_STATES.GUEST);
   signoutBtn?.classList.toggle("hidden", authState === AUTH_STATES.GUEST);
+}
+
+/* Tier dropdown + upgrade CTA wiring */
+function initPremiumUi() {
+  const menu = $("#tier-menu");
+  const btn = $("#tier-btn");
+  if (btn && menu) {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const open = menu.classList.toggle("hidden");
+      btn.setAttribute("aria-expanded", String(!open));
+    });
+    document.addEventListener("click", (e) => {
+      if (!menu.contains(e.target) && e.target !== btn) {
+        menu.classList.add("hidden");
+        btn.setAttribute("aria-expanded", "false");
+      }
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        menu.classList.add("hidden");
+        btn.setAttribute("aria-expanded", "false");
+      }
+    });
+  }
+  const upgradeMsg = () =>
+    toast("Enterprise Pro checkout is coming online — your personal sandbox stays free forever.");
+  $("#upgrade-btn")?.addEventListener("click", upgradeMsg);
+  $("#tier-upgrade-cta")?.addEventListener("click", upgradeMsg);
+}
+
+/* Marketing hero: anonymous first-timers only; collapses on demo launch */
+function heroDismissed() {
+  try {
+    return localStorage.getItem("vibsio:hero:dismissed") === "1";
+  } catch {
+    return true;
+  }
+}
+
+function collapseHero(instant = false) {
+  const hero = $("#marketing-hero");
+  if (!hero || hero.classList.contains("hidden")) return;
+  try {
+    localStorage.setItem("vibsio:hero:dismissed", "1");
+  } catch {
+    /* noop */
+  }
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (instant || reduced) {
+    hero.classList.add("hidden");
+    return;
+  }
+  hero.style.maxHeight = `${hero.scrollHeight}px`;
+  hero.style.overflow = "hidden";
+  hero.style.transition = "max-height 0.5s ease, opacity 0.35s ease";
+  requestAnimationFrame(() => {
+    hero.style.maxHeight = "0px";
+    hero.style.opacity = "0";
+  });
+  setTimeout(() => hero.classList.add("hidden"), 550);
+}
+
+function initHero(source) {
+  const eligible = source === "fresh" && getAuthState() === AUTH_STATES.GUEST && !heroDismissed();
+  if (eligible) $("#marketing-hero")?.classList.remove("hidden");
 }
 
 let lastFocused = null;
@@ -490,9 +549,11 @@ async function boot() {
   // Live session bridge: any auth transition (sign-in, refresh, sign-out)
   // re-renders the 3-state indicator AND re-scopes the workspace sidebar to
   // the signed-in user's own history index.
-  onAuthStateChange(() => {
+  onAuthStateChange((event) => {
     renderAuthIndicator();
     renderSidebar();
+    // Signed-in users are never "anonymous first-timers" — drop the hero
+    if (event === "SIGNED_IN" || event === "INITIAL_SESSION") collapseHero(true);
   });
 
   // OAuth callback tokens arrive in the URL hash — the same slot the state
@@ -515,6 +576,8 @@ async function boot() {
   initAuthUi();
   renderAuthIndicator();
   initSyncStatus();
+  initPremiumUi();
+  initHero(source);
   initTabs();
   initForecast();
   initBlueprint();
@@ -533,6 +596,7 @@ async function boot() {
   // One-click demo engine: inject the sample enterprise workspace through
   // the URL-hash pipeline (lazy chunk — costs nothing until clicked).
   $("#demo-launch-btn")?.addEventListener("click", async () => {
+    collapseHero();
     (await import("../utils/demoLoader.js")).launchDemo();
   });
 
