@@ -1,0 +1,92 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+---
+
+<BaseLayout
+  title="Privacy Policy — vibs.io"
+  description="How vibs.io handles your data: your plans live in your URL and your browser, not on our servers."
+>
+  <SiteHeader />
+
+  <main id="main" class="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+    <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Privacy Policy</h1>
+    <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Effective date: July 11, 2026</p>
+
+    <div class="mt-8 flex flex-col gap-6 text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+      <section>
+        <h2 class="mb-2 text-base font-semibold text-slate-900 dark:text-slate-100">The short version</h2>
+        <p>
+          vibs.io is built so your planning data does not need to touch our servers. Your workspace —
+          project details, backlog items, velocity history, and generated blueprints — is compressed
+          into the URL in your address bar and mirrored to your browser's local storage. If you never
+          sign in, your data never leaves your device unless you choose to share a link.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="mb-2 text-base font-semibold text-slate-900 dark:text-slate-100">Data stored in your browser</h2>
+        <p>
+          We use your browser's local storage to recover workspaces after a refresh or a closed tab,
+          to remember your theme preference, and to keep a local index of your saved workspaces. This
+          data stays on your device. Clearing your browser storage removes it permanently.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="mb-2 text-base font-semibold text-slate-900 dark:text-slate-100">Shareable links</h2>
+        <p>
+          When you copy a vibs.io URL, the full workspace state travels inside that link. Anyone you
+          share the link with can see the plan it contains. Treat workspace links like documents:
+          share them only with people who should read them.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="mb-2 text-base font-semibold text-slate-900 dark:text-slate-100">If you sign in</h2>
+        <p>
+          Sign-in is optional and only required for AI-powered features. Authentication is handled by
+          Supabase using Google OAuth. When you sign in, we receive your name, email address, and
+          profile picture from Google, and we store an authentication session in your browser. We do
+          not receive or store your Google password.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="mb-2 text-base font-semibold text-slate-900 dark:text-slate-100">AI features and the PII filter</h2>
+        <p>
+          When you use AI generation as a signed-in user, the text you submit is processed by our
+          serverless infrastructure to produce your blueprint. Before anything is sent, a filter runs
+          locally in your browser and replaces common sensitive patterns — IP addresses, access keys,
+          tokens, and email addresses — with generic placeholders. AI inputs are used only to produce
+          your requested output; they are not used to train models.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="mb-2 text-base font-semibold text-slate-900 dark:text-slate-100">What we don't do</h2>
+        <p>
+          We do not sell your data. We do not run third-party advertising. We do not use invasive
+          cross-site tracking.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="mb-2 text-base font-semibold text-slate-900 dark:text-slate-100">Contact</h2>
+        <p>
+          Questions about this policy: <a href="mailto:silverspectrummedia@gmail.com" class="font-medium text-indigo-600 hover:underline dark:text-indigo-400">silverspectrummedia@gmail.com</a>
+        </p>
+      </section>
+    </div>
+
+    <p class="mt-10 text-sm">
+      <a href="/" class="font-medium text-indigo-600 hover:underline dark:text-indigo-400">← Back to the workspace</a>
+    </p>
+  </main>
+
+  <footer class="border-t border-slate-200 py-6 dark:border-slate-800">
+    <p class="mx-auto max-w-3xl px-4 text-xs text-slate-400 sm:px-6 dark:text-slate-500">
+      vibs.io · <a href="/privacy" class="hover:underline">Privacy</a> · <a href="/terms" class="hover:underline">Terms</a>
+    </p>
+  </footer>
+</BaseLayout>
