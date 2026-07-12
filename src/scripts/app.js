@@ -35,6 +35,7 @@ import {
 } from "./workspaces.js";
 import { initForecast, refreshForecastUi } from "./forecast.js";
 import { initBlueprint, refreshBlueprintUi } from "./blueprint.js";
+import { initOnboarding } from "./onboarding.js";
 import { initGovernance, refreshGovernanceUi } from "./governance.js";
 import { initIntegrations } from "./integrations.js";
 
@@ -523,6 +524,10 @@ async function boot() {
   if (source === "fresh") {
     await syncNow();
   }
+
+  // First-time visitors (fresh workspace, no completion flag) get the
+  // interactive walkthrough; shared-link and returning sessions bypass it.
+  initOnboarding(source);
 
   // Pasting a different share-link hash rehydrates the workspace live.
   window.addEventListener("hashchange", async () => {
