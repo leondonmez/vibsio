@@ -181,11 +181,28 @@ function renderItems() {
   for (const item of s.items) {
     const li = document.createElement("li");
     li.className =
-      "flex flex-wrap items-center gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm dark:border-slate-800 dark:bg-slate-900";
+      "flex flex-wrap items-start gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm dark:border-slate-800 dark:bg-slate-900";
 
-    const title = document.createElement("p");
-    title.textContent = item.t;
-    title.className = "min-w-0 flex-1 truncate text-sm font-medium text-slate-800 dark:text-slate-200";
+    // Inline-editable story text: full-length, wrapping, borderless field
+    // bound straight to the URL-hash state engine.
+    const title = document.createElement("textarea");
+    title.value = item.t;
+    title.rows = 1;
+    title.setAttribute("aria-label", "User story text");
+    title.className =
+      "min-w-0 flex-1 resize-none border-none bg-transparent p-0 text-sm font-medium text-slate-800 focus:ring-1 focus:ring-purple-500 w-full whitespace-normal break-words pr-4 dark:text-slate-200";
+    const autosize = () => {
+      title.style.height = "auto";
+      title.style.height = `${title.scrollHeight}px`;
+    };
+    title.addEventListener("input", () => {
+      autosize();
+      update((d) => {
+        const target = d.items.find((it) => it.id === item.id);
+        if (target) target.t = title.value;
+      });
+    });
+    requestAnimationFrame(autosize);
 
     const effort = document.createElement("span");
     effort.textContent = String(item.e);
@@ -556,6 +573,14 @@ async function boot() {
   if (source === "fresh" && inAppMode()) {
     await syncNow();
   }
+
+  // Branding logo → root reset: strip the hash and reload so the view
+  // splitter re-evaluates and shows the landing (empty hash === landing).
+  $("#brand-logo")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    history.replaceState(null, "", location.pathname + location.search);
+    location.reload();
+  });
 
   // Public landing CTAs hand off to the workspace.
   $("#landing-open-sandbox")?.addEventListener("click", async () => {

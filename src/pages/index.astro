@@ -23,29 +23,20 @@ import PublicLanding from "../components/PublicLanding.astro";
 
 <BaseLayout>
   {/* View splitter: decide landing vs. app BEFORE the body paints so exactly
-      one view is ever shown. Reads hash + localStorage only — never writes. */}
+      one view is ever shown. The URL hash is the ONLY signal — an empty hash
+      at the root always shows the landing, never a sticky app from storage. */}
   <script is:inline>
     (() => {
       let active = false;
       try {
         const h = location.hash.slice(1);
-        if (h.startsWith("w1:") || h.startsWith("w0:")) active = true;
-        if (!active) {
-          for (let i = 0; i < localStorage.length; i += 1) {
-            const k = localStorage.key(i);
-            if (
-              k &&
-              (k.indexOf("vibsio:workspaces") === 0 ||
-                k === "vibsio:session:current" ||
-                k === "vibsio:auth:session")
-            ) {
-              active = true;
-              break;
-            }
-          }
-        }
+        // A live workspace payload, or an OAuth callback returning to one.
+        active =
+          h.startsWith("w1:") ||
+          h.startsWith("w0:") ||
+          /(^|[#&])(access_token|error)=/.test(h);
       } catch (_) {
-        /* storage blocked — default to the landing */
+        /* noop */
       }
       document.documentElement.classList.add(active ? "mode-app" : "mode-landing");
     })();

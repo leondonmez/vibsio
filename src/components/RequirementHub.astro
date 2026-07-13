@@ -18,9 +18,10 @@
     </p>
   </div>
 
-  <!-- Header control panel -->
-  <div class="mb-3 grid gap-2.5 lg:grid-cols-3">
-    <div>
+  <!-- Header control panel: flexible horizontal layout, no fixed narrow
+       columns, so button labels never overlap or collide. -->
+  <div class="mb-3 flex flex-row flex-wrap items-end gap-4">
+    <div class="min-w-[200px] flex-1">
       <label for="stack-select" class="mb-1.5 block text-xs font-medium text-slate-600 dark:text-slate-400">
         Architectural Stack Match
       </label>
@@ -36,7 +37,7 @@
       </select>
     </div>
 
-    <div>
+    <div class="min-w-max">
       <span id="seniority-label" class="mb-1.5 block text-xs font-medium text-slate-600 dark:text-slate-400">
         Team Seniority Nuance Modulator
       </span>
@@ -44,15 +45,15 @@
         id="seniority-group"
         role="group"
         aria-labelledby="seniority-label"
-        class="grid grid-cols-3 rounded-lg border border-slate-300 p-0.5 dark:border-slate-700"
+        class="inline-flex rounded-lg border border-slate-300 p-0.5 dark:border-slate-700"
       >
-        <button type="button" data-value="junior" aria-pressed="false" class="rounded-md px-2 py-1.5 text-xs font-medium transition">Junior Developer</button>
-        <button type="button" data-value="mid" aria-pressed="false" class="rounded-md px-2 py-1.5 text-xs font-medium transition">Mid-Level Engineer</button>
-        <button type="button" data-value="senior" aria-pressed="false" class="rounded-md px-2 py-1.5 text-xs font-medium transition">Senior Technical Lead</button>
+        <button type="button" data-value="junior" aria-pressed="false" class="rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap transition">Junior Developer</button>
+        <button type="button" data-value="mid" aria-pressed="false" class="rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap transition">Mid-Level Engineer</button>
+        <button type="button" data-value="senior" aria-pressed="false" class="rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap transition">Senior Technical Lead</button>
       </div>
     </div>
 
-    <div>
+    <div class="min-w-max">
       <span id="syntax-label" class="mb-1.5 block text-xs font-medium text-slate-600 dark:text-slate-400">
         Acceptance Criteria Syntax
       </span>
@@ -60,10 +61,10 @@
         id="syntax-group"
         role="group"
         aria-labelledby="syntax-label"
-        class="grid grid-cols-2 rounded-lg border border-slate-300 p-0.5 dark:border-slate-700"
+        class="inline-flex rounded-lg border border-slate-300 p-0.5 dark:border-slate-700"
       >
-        <button type="button" data-value="checklist" aria-pressed="false" class="rounded-md px-2 py-1.5 text-xs font-medium transition">Functional Checklist</button>
-        <button type="button" data-value="bdd" aria-pressed="false" class="rounded-md px-2 py-1.5 text-xs font-medium transition">BDD Given-When-Then</button>
+        <button type="button" data-value="checklist" aria-pressed="false" class="rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap transition">Functional Checklist</button>
+        <button type="button" data-value="bdd" aria-pressed="false" class="rounded-md px-3 py-1.5 text-sm font-medium whitespace-nowrap transition">BDD Given-When-Then</button>
       </div>
     </div>
   </div>

@@ -117,7 +117,10 @@ export function signInWithGoogle() {
     toast("Supabase project not configured yet — set SUPABASE_URL in src/scripts/auth.js.");
     return;
   }
-  const redirectTo = encodeURIComponent(window.location.origin + "/");
+  // Carry the full current URL — including the compressed workspace hash —
+  // so Supabase drops the user back at their fully populated blueprint.
+  const returnUrl = window.location.origin + window.location.pathname + window.location.hash;
+  const redirectTo = encodeURIComponent(returnUrl);
   window.location.assign(
     `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${redirectTo}`,
   );
@@ -147,13 +150,18 @@ export async function signOut() {
 
 export async function captureAuthCallback() {
   const fragment = location.hash.slice(1);
-  const isCallback = /(^|&)(access_token|error)=/.test(fragment);
-  if (!isCallback) return false;
+  const marker = fragment.match(/(^|[#&])(access_token|error)=/);
+  if (!marker) return false;
 
-  // Lift the tokens out of the address bar immediately — this hash slot
-  // belongs to the workspace state engine, which boots right after us.
-  history.replaceState(null, "", location.pathname + location.search);
-  const params = new URLSearchParams(fragment);
+  // The fragment may lead with the preserved workspace payload (redirect_to
+  // carried the hash), then the token params appended by Supabase after a
+  // `#` or `&`. Split them: restore the workspace hash, lift out the tokens.
+  const workspacePart = fragment.slice(0, marker.index);
+  const tokenPart = fragment.slice(marker.index + marker[1].length);
+  const cleanHash =
+    workspacePart.startsWith("w1:") || workspacePart.startsWith("w0:") ? "#" + workspacePart : "";
+  history.replaceState(null, "", location.pathname + location.search + cleanHash);
+  const params = new URLSearchParams(tokenPart);
 
   if (params.get("error")) {
     toast(`Sign-in was cancelled or failed: ${params.get("error_description") ?? params.get("error")}`);
