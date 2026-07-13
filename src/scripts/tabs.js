@@ -34,6 +34,9 @@ export function setActiveTab(name) {
   } catch {
     /* private mode — tab just resets next visit */
   }
+  // Panels that auto-size content (e.g. story textareas) need a nudge once
+  // they're actually visible — measurements are 0 while display:none.
+  document.dispatchEvent(new CustomEvent("vibsio:tabshown", { detail: name }));
 }
 
 export function getActiveTab() {

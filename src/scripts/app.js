@@ -193,7 +193,9 @@ function renderItems() {
       "min-w-0 flex-1 resize-none border-none bg-transparent p-0 text-sm font-medium text-slate-800 focus:ring-1 focus:ring-purple-500 w-full whitespace-normal break-words pr-4 dark:text-slate-200";
     const autosize = () => {
       title.style.height = "auto";
-      title.style.height = `${title.scrollHeight}px`;
+      // scrollHeight is 0 while the panel is display:none — don't collapse to
+      // 0px (which hides the text); leave the natural rows=1 height instead.
+      if (title.scrollHeight > 0) title.style.height = `${title.scrollHeight}px`;
     };
     title.addEventListener("input", () => {
       autosize();
@@ -564,6 +566,16 @@ async function boot() {
   initIntegrations();
   // Gated modules (e.g. the resource overlay lock) can summon the auth gate
   document.addEventListener("vibsio:opengate", openAiGate);
+
+  // Story textareas measure 0 while their tab is hidden — re-size them the
+  // moment the Backlog panel becomes visible so the text is never clipped.
+  document.addEventListener("vibsio:tabshown", (e) => {
+    if (e.detail !== "admin") return;
+    for (const ta of document.querySelectorAll("#item-list textarea")) {
+      ta.style.height = "auto";
+      if (ta.scrollHeight > 0) ta.style.height = `${ta.scrollHeight}px`;
+    }
+  });
 
   if (source === "recovered") {
     toast("Previous session recovered from this browser — no account needed.");
