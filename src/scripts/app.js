@@ -88,6 +88,8 @@ function revealWorkspace() {
   root.classList.add("revealing");
   root.classList.remove("mode-landing");
   root.classList.add("mode-app");
+  // Story textareas measured 0 under the landing overlay — resize now visible.
+  requestAnimationFrame(autosizeStories);
   if (landing) {
     requestAnimationFrame(() => landing.classList.add("landing-leaving"));
     const done = () => root.classList.remove("revealing");
@@ -100,6 +102,17 @@ function revealWorkspace() {
 
 function inAppMode() {
   return document.documentElement.classList.contains("mode-app");
+}
+
+/* Re-measure every story textarea. Story fields live in a tab that is
+   display:none until shown (and under the landing until revealed), where
+   scrollHeight reads 0 — so their height must be recomputed whenever they
+   (re)become visible, or multi-line stories clip to a single line. */
+function autosizeStories() {
+  for (const ta of document.querySelectorAll("#item-list textarea")) {
+    ta.style.height = "auto";
+    if (ta.scrollHeight > 0) ta.style.height = `${ta.scrollHeight}px`;
+  }
 }
 
 /* ================================================================ */
@@ -559,6 +572,11 @@ async function boot() {
   initAuthUi();
   renderAuthIndicator();
   initSyncStatus();
+  // Register BEFORE initTabs so the restored-tab dispatch is caught, and
+  // re-measure story textareas whenever the Backlog panel becomes visible.
+  document.addEventListener("vibsio:tabshown", (e) => {
+    if (e.detail === "admin") requestAnimationFrame(autosizeStories);
+  });
   initTabs();
   initForecast();
   initBlueprint();
@@ -566,16 +584,6 @@ async function boot() {
   initIntegrations();
   // Gated modules (e.g. the resource overlay lock) can summon the auth gate
   document.addEventListener("vibsio:opengate", openAiGate);
-
-  // Story textareas measure 0 while their tab is hidden — re-size them the
-  // moment the Backlog panel becomes visible so the text is never clipped.
-  document.addEventListener("vibsio:tabshown", (e) => {
-    if (e.detail !== "admin") return;
-    for (const ta of document.querySelectorAll("#item-list textarea")) {
-      ta.style.height = "auto";
-      if (ta.scrollHeight > 0) ta.style.height = `${ta.scrollHeight}px`;
-    }
-  });
 
   if (source === "recovered") {
     toast("Previous session recovered from this browser — no account needed.");
