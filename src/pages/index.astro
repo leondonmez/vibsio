@@ -18,11 +18,43 @@ import TokenManager from "../components/TokenManager.astro";
 import OnboardingStep from "../components/OnboardingStep.astro";
 import MarketingHero from "../components/MarketingHero.astro";
 import WorkspaceTabs from "../components/WorkspaceTabs.astro";
+import PublicLanding from "../components/PublicLanding.astro";
 ---
 
 <BaseLayout>
+  {/* View splitter: decide landing vs. app BEFORE the body paints so exactly
+      one view is ever shown. Reads hash + localStorage only — never writes. */}
+  <script is:inline>
+    (() => {
+      let active = false;
+      try {
+        const h = location.hash.slice(1);
+        if (h.startsWith("w1:") || h.startsWith("w0:")) active = true;
+        if (!active) {
+          for (let i = 0; i < localStorage.length; i += 1) {
+            const k = localStorage.key(i);
+            if (
+              k &&
+              (k.indexOf("vibsio:workspaces") === 0 ||
+                k === "vibsio:session:current" ||
+                k === "vibsio:auth:session")
+            ) {
+              active = true;
+              break;
+            }
+          }
+        }
+      } catch (_) {
+        /* storage blocked — default to the landing */
+      }
+      document.documentElement.classList.add(active ? "mode-app" : "mode-landing");
+    })();
+  </script>
+
+  <PublicLanding />
+
   <!-- 100vh cockpit shell: fixed viewport on desktop, natural scroll on mobile -->
-  <div class="flex min-h-screen flex-col lg:h-screen lg:overflow-hidden">
+  <div id="app-root" class="flex min-h-screen flex-col lg:h-screen lg:overflow-hidden">
     <SiteHeader />
 
     <!-- Hero: anonymous first-time visitors only; app.js reveals + collapses -->

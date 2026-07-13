@@ -29,6 +29,36 @@
   }
 }
 
+/* View splitter: public landing ⇄ workspace cockpit.
+   The mode class is stamped on <html> by a blocking inline script before the
+   body paints, so exactly one view is ever visible — no flash. */
+html.mode-app #public-landing {
+  display: none;
+}
+html.mode-landing #app-root {
+  display: none;
+}
+/* During the reveal transition, keep the landing painted over the now-active
+   app so it can fade + slide up before being removed. */
+html.mode-app.revealing #public-landing {
+  display: block;
+}
+#public-landing {
+  transition:
+    opacity 0.45s ease,
+    transform 0.45s ease;
+}
+#public-landing.landing-leaving {
+  opacity: 0;
+  transform: translateY(-16px);
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  #public-landing {
+    transition: none;
+  }
+}
+
 /* Onboarding card entrance */
 @keyframes onboard-pop {
   from {

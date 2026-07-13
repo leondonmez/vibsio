@@ -50,24 +50,56 @@ const $ = (sel) => document.querySelector(sel);
 /* ================================================================ */
 
 function initTheme() {
-  const btn = $("#theme-toggle");
-  if (!btn) return;
+  // Multiple toggles can coexist (app header + public landing nav).
+  const toggles = [...document.querySelectorAll("[data-theme-toggle]")];
+  if (toggles.length === 0) return;
   const reflect = () => {
     const dark = document.documentElement.classList.contains("dark");
-    btn.setAttribute("aria-pressed", String(dark));
-    $("#theme-icon-sun")?.classList.toggle("hidden", dark);
-    $("#theme-icon-moon")?.classList.toggle("hidden", !dark);
-  };
-  btn.addEventListener("click", () => {
-    const dark = document.documentElement.classList.toggle("dark");
-    try {
-      localStorage.setItem("vibsio:theme", dark ? "dark" : "light");
-    } catch {
-      /* noop */
+    for (const btn of toggles) {
+      btn.setAttribute("aria-pressed", String(dark));
+      btn.querySelector("[data-icon-sun]")?.classList.toggle("hidden", dark);
+      btn.querySelector("[data-icon-moon]")?.classList.toggle("hidden", !dark);
     }
-    reflect();
-  });
+  };
+  for (const btn of toggles) {
+    btn.addEventListener("click", () => {
+      const dark = document.documentElement.classList.toggle("dark");
+      try {
+        localStorage.setItem("vibsio:theme", dark ? "dark" : "light");
+      } catch {
+        /* noop */
+      }
+      reflect();
+    });
+  }
   reflect();
+}
+
+/* ================================================================ */
+/* VIEW SPLITTER — public landing ⇄ workspace cockpit                */
+/* ================================================================ */
+
+function revealWorkspace() {
+  const root = document.documentElement;
+  if (!root.classList.contains("mode-landing")) return; // already in the app
+  const landing = document.getElementById("public-landing");
+  // `.revealing` keeps the landing painted while mode-app takes over, so the
+  // fade/slide-up animates cleanly before it is finally display:none'd.
+  root.classList.add("revealing");
+  root.classList.remove("mode-landing");
+  root.classList.add("mode-app");
+  if (landing) {
+    requestAnimationFrame(() => landing.classList.add("landing-leaving"));
+    const done = () => root.classList.remove("revealing");
+    landing.addEventListener("transitionend", done, { once: true });
+    setTimeout(done, 700);
+  } else {
+    root.classList.remove("revealing");
+  }
+}
+
+function inAppMode() {
+  return document.documentElement.classList.contains("mode-app");
 }
 
 /* ================================================================ */
@@ -519,9 +551,22 @@ async function boot() {
   if (source === "recovered") {
     toast("Previous session recovered from this browser — no account needed.");
   }
-  if (source === "fresh") {
+  // Only persist an empty fresh workspace once the user has actually entered
+  // the app; anonymous visitors sitting on the landing leave no trace.
+  if (source === "fresh" && inAppMode()) {
     await syncNow();
   }
+
+  // Public landing CTAs hand off to the workspace.
+  $("#landing-open-sandbox")?.addEventListener("click", async () => {
+    revealWorkspace();
+    await syncNow(); // persist the empty workspace so a reload stays in-app
+    $("#session-name")?.focus();
+  });
+  $("#landing-demo")?.addEventListener("click", async () => {
+    revealWorkspace();
+    (await import("../utils/demoLoader.js")).launchDemo();
+  });
 
   // One-click demo engine: inject the sample enterprise workspace through
   // the URL-hash pipeline (lazy chunk — costs nothing until clicked).
@@ -541,7 +586,9 @@ async function boot() {
   } catch {
     /* storage unavailable — never nag */
   }
-  if (source === "fresh" && !tourDone) {
+  // Auto-tour only for a fresh visitor who is already inside the app — a
+  // landing visitor hasn't entered yet, so it must not fire over the overlay.
+  if (source === "fresh" && !tourDone && inAppMode()) {
     const kick = () =>
       setTimeout(async () => {
         (await loadTour()).startTour();
