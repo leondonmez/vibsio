@@ -1,96 +1,139 @@
 ---
 /**
- * Global header — elite B2B commercial platform chrome.
- * Brand · Multi-Methodology Engine · workspace tier indicator dropdown ·
- * "Upgrade to Enterprise Pro" accent CTA · profile group · theme + tour.
- * Tier label + dropdown wiring live in app.js.
+ * AREA 3 — Global Top Bar (h-12).
+ * "+ Create" dropdown · center global search · workspace tier switcher ·
+ * settings / theme / tour / profile cluster. Wired in app.js.
  */
 ---
 
 <header
-  class="z-40 shrink-0 border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90"
+  class="z-40 flex h-12 shrink-0 select-none items-center gap-3 border-b border-slate-200/60 bg-white px-3 dark:border-slate-800/80 dark:bg-slate-950"
 >
-  <div class="flex h-12 items-center gap-2 px-4 sm:gap-3 sm:px-5">
-    <a id="brand-logo" href="/" class="flex items-center gap-2" aria-label="vibs.io home">
-      <span
-        class="flex h-6.5 w-6.5 items-center justify-center rounded-md bg-indigo-600 text-sm font-bold text-white"
-        aria-hidden="true">v</span
-      >
-      <span class="text-sm font-semibold tracking-tight">vibs.io</span>
+  <!-- Brand + Create -->
+  <div class="flex items-center gap-2">
+    <a href="/" class="flex items-center gap-2" aria-label="vibs.io home">
+      <span class="flex h-6.5 w-6.5 items-center justify-center rounded-md bg-indigo-600 text-sm font-bold text-white" aria-hidden="true">v</span>
+      <span class="hidden text-sm font-semibold tracking-tight sm:block">vibs.io</span>
     </a>
 
-    <div class="ml-auto flex items-center gap-1.5 sm:gap-2">
-      <!-- Multi-Methodology Engine -->
-      <label for="methodology-select" class="sr-only">Multi-Methodology Engine</label>
-      <select
-        id="methodology-select"
-        class="h-8 rounded-md border border-slate-300 bg-white px-2 text-xs font-medium text-slate-700 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-        title="Multi-Methodology Engine — re-labels the whole workspace"
+    <div class="relative">
+      <button
+        id="create-btn"
+        type="button"
+        aria-haspopup="true"
+        aria-expanded="false"
+        class="flex h-8 items-center gap-1 rounded-md bg-indigo-600 pl-2.5 pr-2 text-xs font-bold text-white shadow-sm transition hover:bg-indigo-500"
       >
-        <option value="scrum">Scrum</option>
-        <option value="kanban">Kanban</option>
-        <option value="pmo">Traditional PMO</option>
-      </select>
-
-      <!-- Workspace tier status block (static) -->
+        + Create
+        <svg class="h-3 w-3 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"></path>
+        </svg>
+      </button>
       <div
-        id="tier-status"
-        class="hidden h-8 max-w-72 items-center gap-1.5 rounded-md border border-slate-300 bg-slate-50 px-2.5 text-xs font-medium text-slate-600 md:flex dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
+        id="create-menu"
+        class="absolute left-0 top-10 z-50 hidden w-56 rounded-lg border border-slate-200/60 bg-white p-1 shadow-2xl dark:border-slate-700 dark:bg-slate-900"
       >
-        <span id="tier-dot" class="h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400" aria-hidden="true"></span>
-        <img id="tier-avatar" src="" alt="" referrerpolicy="no-referrer" class="hidden h-4 w-4 shrink-0 rounded-full" />
-        <span id="tier-label" class="truncate">Workspace: Personal Sandbox (Free Tier)</span>
+        <button id="create-new-blueprint" type="button" class="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-xs font-medium text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800">
+          <span aria-hidden="true">📄</span> New Blueprint
+          <span class="ml-auto text-[10px] text-slate-400">fresh workspace</span>
+        </button>
+        <button id="demo-launch-btn" type="button" class="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-xs font-medium text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800">
+          <span aria-hidden="true">⚡</span> Load Sample Workspace
+          <span class="ml-auto text-[10px] text-slate-400">demo data</span>
+        </button>
       </div>
-
-      <!-- Profile group -->
-      <button
-        id="auth-signin-btn"
-        type="button"
-        class="h-8 rounded-md bg-indigo-600 px-3 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-500"
-      >
-        Sign in
-      </button>
-      <button
-        id="auth-signout-btn"
-        type="button"
-        class="hidden h-8 rounded-md border border-slate-300 px-2.5 text-xs font-medium text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-      >
-        Sign out
-      </button>
-
-      <!-- Theme toggle -->
-      <button
-        id="theme-toggle"
-        data-theme-toggle
-        type="button"
-        aria-pressed="false"
-        aria-label="Toggle dark mode"
-        class="flex h-8 w-8 items-center justify-center rounded-md border border-slate-300 text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-      >
-        <svg data-icon-moon class="hidden h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-        </svg>
-        <svg data-icon-sun class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1.5m6.364.636l-1.06 1.06M21 12h-1.5m-.636 6.364l-1.06-1.06M12 19.5V21m-6.364-2.136l1.06-1.06M4.5 12H3m2.136-6.364l1.06 1.06M12 8.25a3.75 3.75 0 100 7.5 3.75 3.75 0 000-7.5z"></path>
-        </svg>
-      </button>
-
-      <!-- Guided tour launcher -->
-      <button
-        id="tour-launch-btn"
-        type="button"
-        aria-label="Launch the guided tour"
-        title="Guided tour"
-        class="flex h-8 w-8 items-center justify-center rounded-md border border-slate-300 text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-      >
-        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"
-          ></path>
-        </svg>
-      </button>
     </div>
+  </div>
+
+  <!-- Center: global search -->
+  <div class="flex min-w-0 flex-1 justify-center">
+    <label for="global-search" class="sr-only">Search workspaces</label>
+    <input
+      id="global-search"
+      type="search"
+      placeholder="Search workspaces…"
+      autocomplete="off"
+      class="h-8 w-full max-w-md select-text rounded-md border border-slate-200/60 bg-slate-50 px-3 text-xs text-slate-700 placeholder:text-slate-400 focus:border-indigo-400 focus:bg-white dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:focus:bg-slate-950"
+    />
+  </div>
+
+  <!-- Right cluster -->
+  <div class="flex items-center gap-1.5">
+    <label for="methodology-select" class="sr-only">Multi-Methodology Engine</label>
+    <select
+      id="methodology-select"
+      class="h-8 rounded-md border border-slate-200/60 bg-white px-2 text-xs font-medium text-slate-700 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+      title="Multi-Methodology Engine — re-labels the whole workspace"
+    >
+      <option value="scrum">Scrum</option>
+      <option value="kanban">Kanban</option>
+      <option value="pmo">Traditional PMO</option>
+    </select>
+
+    <!-- Workspace instance switcher / tier status -->
+    <div
+      id="tier-status"
+      class="hidden h-8 max-w-64 items-center gap-1.5 rounded-md border border-slate-200/60 bg-slate-50 px-2.5 text-xs font-medium text-slate-600 lg:flex dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
+    >
+      <span id="tier-dot" class="h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400" aria-hidden="true"></span>
+      <img id="tier-avatar" src="" alt="" referrerpolicy="no-referrer" class="hidden h-4 w-4 shrink-0 rounded-full" />
+      <span id="tier-label" class="truncate">Workspace: Personal Sandbox (Free Tier)</span>
+    </div>
+
+    <button
+      id="auth-signin-btn"
+      type="button"
+      class="h-8 rounded-md bg-indigo-600 px-3 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-500"
+    >
+      Sign in
+    </button>
+    <button
+      id="auth-signout-btn"
+      type="button"
+      class="hidden h-8 rounded-md border border-slate-200/60 px-2.5 text-xs font-medium text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+    >
+      Sign out
+    </button>
+
+    <button
+      id="theme-toggle"
+      data-theme-toggle
+      type="button"
+      aria-pressed="false"
+      aria-label="Toggle dark mode"
+      class="flex h-8 w-8 items-center justify-center rounded-md border border-slate-200/60 text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+    >
+      <svg data-icon-moon class="hidden h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+      </svg>
+      <svg data-icon-sun class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1.5m6.364.636l-1.06 1.06M21 12h-1.5m-.636 6.364l-1.06-1.06M12 19.5V21m-6.364-2.136l1.06-1.06M4.5 12H3m2.136-6.364l1.06 1.06M12 8.25a3.75 3.75 0 100 7.5 3.75 3.75 0 000-7.5z"></path>
+      </svg>
+    </button>
+
+    <button
+      id="tour-launch-btn"
+      type="button"
+      aria-label="Launch the guided tour"
+      title="Guided tour"
+      class="flex h-8 w-8 items-center justify-center rounded-md border border-slate-200/60 text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+    >
+      <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"></path>
+      </svg>
+    </button>
+
+    <button
+      id="settings-btn"
+      type="button"
+      aria-label="Integrations and settings"
+      title="Integrations & tokens"
+      class="flex h-8 w-8 items-center justify-center rounded-md border border-slate-200/60 text-slate-600 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+    >
+      <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 011.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.56.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.893.149c-.425.07-.765.383-.93.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 01-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.397.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527a1.125 1.125 0 01-1.45-.12l-.773-.774a1.125 1.125 0 01-.12-1.45l.527-.737c.25-.35.273-.806.108-1.204-.165-.397-.505-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 01.12-1.45l.773-.773a1.125 1.125 0 011.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+      </svg>
+    </button>
   </div>
 </header>

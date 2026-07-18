@@ -35,7 +35,7 @@ import {
 } from "./workspaces.js";
 import { initForecast, refreshForecastUi } from "./forecast.js";
 import { initBlueprint, refreshBlueprintUi } from "./blueprint.js";
-import { initTabs } from "./tabs.js";
+import { initTabs, setActiveTab } from "./tabs.js";
 
 // Onboarding ships as its own lazy async chunk — never loaded unless a
 // first-timer arrives or the header tour button is clicked.
@@ -297,7 +297,7 @@ function renderSidebar() {
   if (entries.length === 0) {
     const li = document.createElement("li");
     li.textContent = "No saved workspaces yet — start planning and this list fills itself.";
-    li.className = "px-3 py-4 text-xs leading-relaxed text-slate-500 dark:text-slate-400";
+    li.className = "px-2.5 py-3 text-[11px] leading-relaxed text-slate-500";
     list.append(li);
     return;
   }
@@ -305,10 +305,11 @@ function renderSidebar() {
   for (const entry of entries) {
     const li = document.createElement("li");
     const isActive = entry.id === activeId;
+    // Sidebar rail is permanently dark — palette is theme-independent.
     li.className = `group rounded-md border px-2 py-1.5 transition ${
       isActive
-        ? "border-indigo-300 bg-indigo-50 dark:border-indigo-800 dark:bg-indigo-950/50"
-        : "border-transparent hover:border-slate-200 hover:bg-slate-50 dark:hover:border-slate-800 dark:hover:bg-slate-900"
+        ? "border-indigo-400/40 bg-indigo-500/15"
+        : "border-transparent hover:bg-white/5"
     }`;
 
     const nameRow = document.createElement("div");
@@ -319,14 +320,14 @@ function renderSidebar() {
     loadBtn.textContent = entry.name || "Untitled Blueprint";
     loadBtn.title = "Load this workspace";
     loadBtn.className =
-      "min-w-0 flex-1 truncate text-left text-[13px] font-medium text-slate-800 hover:text-indigo-600 dark:text-slate-200 dark:hover:text-indigo-400";
+      "min-w-0 flex-1 truncate text-left text-[13px] font-medium tracking-tight text-slate-200 hover:text-white";
     loadBtn.addEventListener("click", () => loadWorkspace(entry));
 
     const renameBtn = document.createElement("button");
     renameBtn.type = "button";
     renameBtn.textContent = "Rename";
     renameBtn.className =
-      "rounded px-1.5 py-0.5 text-[11px] font-medium text-slate-500 hover:bg-slate-200 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200";
+      "rounded px-1.5 py-0.5 text-[10px] font-medium text-slate-500 hover:bg-white/10 hover:text-slate-200";
     renameBtn.addEventListener("click", () => startRename(entry, li, nameRow));
 
     const delBtn = document.createElement("button");
@@ -334,7 +335,7 @@ function renderSidebar() {
     delBtn.textContent = "Delete";
     delBtn.setAttribute("aria-label", `Delete workspace ${entry.name}`);
     delBtn.className =
-      "rounded px-1.5 py-0.5 text-[11px] font-medium text-slate-500 hover:bg-rose-100 hover:text-rose-700 dark:text-slate-400 dark:hover:bg-rose-950 dark:hover:text-rose-400";
+      "rounded px-1.5 py-0.5 text-[10px] font-medium text-slate-500 hover:bg-rose-500/15 hover:text-rose-300";
     delBtn.addEventListener("click", () => {
       deleteWorkspace(entry.id);
       renderSidebar();
@@ -343,7 +344,7 @@ function renderSidebar() {
     nameRow.append(loadBtn, renameBtn, delBtn);
 
     const meta = document.createElement("p");
-    meta.className = "text-[10px] text-slate-500 dark:text-slate-400";
+    meta.className = "text-[10px] text-slate-500";
     meta.textContent = `${METHODOLOGIES[entry.m]?.label ?? "Scrum"} · ${formatWhen(entry.updatedAt ?? Date.now())}`;
 
     li.append(nameRow, meta);
@@ -357,7 +358,7 @@ function startRename(entry, li, nameRow) {
   input.value = entry.name || "";
   input.setAttribute("aria-label", "Workspace name");
   input.className =
-    "w-full rounded-md border border-indigo-300 bg-white px-2 py-1 text-sm dark:border-indigo-700 dark:bg-slate-950";
+    "w-full rounded-md border border-indigo-500/50 bg-slate-800 px-2 py-1 text-sm text-slate-100";
   const commit = () => {
     const name = input.value.trim() || "Untitled Blueprint";
     renameWorkspace(entry.id, name);
@@ -624,7 +625,54 @@ async function boot() {
   // The header button and hero link launch it for anyone, anytime.
   const launchTour = async () => (await loadTour()).startTour();
   $("#tour-launch-btn")?.addEventListener("click", launchTour);
-  $("#hero-tour-btn")?.addEventListener("click", launchTour);
+
+  // ---- AREA 3 top-bar wiring ----
+  // "+ Create" dropdown
+  const createMenu = $("#create-menu");
+  const createBtn = $("#create-btn");
+  const closeCreate = () => {
+    createMenu?.classList.add("hidden");
+    createBtn?.setAttribute("aria-expanded", "false");
+  };
+  createBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const open = createMenu.classList.toggle("hidden");
+    createBtn.setAttribute("aria-expanded", String(!open));
+  });
+  document.addEventListener("click", (e) => {
+    if (createMenu && !createMenu.contains(e.target) && e.target !== createBtn) closeCreate();
+  });
+  $("#create-new-blueprint")?.addEventListener("click", () => {
+    closeCreate();
+    $("#new-blueprint-btn")?.click();
+  });
+  $("#demo-launch-btn")?.addEventListener("click", closeCreate);
+  // Settings gear → the Integrations & Token Manager drawer
+  $("#settings-btn")?.addEventListener("click", () => $("#open-token-manager")?.click());
+  // Global search filters the sidebar workspace tree live
+  $("#global-search")?.addEventListener("input", (e) => {
+    const q = e.target.value.trim().toLowerCase();
+    document.querySelectorAll("#workspace-list li").forEach((li) => {
+      li.classList.toggle("hidden", q !== "" && !li.textContent.toLowerCase().includes(q));
+    });
+  });
+
+  // ---- AREA 1 sidebar navigation hub ----
+  const NAV_ROUTES = { home: "quant", insights: "quant", trees: "admin" };
+  document.querySelectorAll("[data-nav]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const key = btn.dataset.nav;
+      if (NAV_ROUTES[key]) {
+        setActiveTab(NAV_ROUTES[key]);
+        $("#main")?.scrollTo({ top: 0, behavior: "smooth" });
+      } else if (key === "starred") {
+        $("#workspace-tree")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        toast("Star blueprints from the project tree — arriving with cloud sync.");
+      } else if (key === "channels") {
+        toast("Team Channels arrive with Enterprise Pro — your sandbox stays free.");
+      }
+    });
+  });
   let tourDone = true;
   try {
     tourDone = localStorage.getItem("vibs_onboarding_completed") === "1";

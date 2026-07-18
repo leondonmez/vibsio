@@ -1,0 +1,58 @@
+---
+/**
+ * AREA 2 — Header Viewport (h-12, locked below the Top Bar).
+ * Project title (live workspace-name binding) + the three heavy project
+ * view tabs + the Multi-Methodology Engine. Tab switching: tabs.js.
+ */
+
+const tabs = [
+  { id: "quant", label: "Quantitative Sandbox", icon: "📊" },
+  { id: "blueprint", label: "Requirement Engine", icon: "✨" },
+  { id: "admin", label: "Backlog & Metadata", icon: "📋" },
+];
+---
+
+<div
+  aria-labelledby="session-heading"
+  class="flex h-12 shrink-0 select-none items-stretch gap-3 border-b border-slate-200/60 bg-white px-3 dark:border-slate-800/80 dark:bg-slate-950"
+>
+  <h1 id="session-heading" class="sr-only">Current planning workspace</h1>
+
+  <!-- Project title -->
+  <div class="flex min-w-0 max-w-44 flex-1 items-center">
+    <label for="session-name" class="sr-only">Workspace name</label>
+    <input
+      id="session-name"
+      type="text"
+      maxlength="120"
+      placeholder="Untitled Blueprint"
+      class="w-full select-text truncate rounded-md border border-transparent bg-transparent px-2 py-1 text-sm font-semibold tracking-tight text-slate-900 transition placeholder:text-slate-400 hover:border-slate-200/60 focus:border-indigo-400 focus:bg-white dark:text-slate-100 dark:hover:border-slate-700 dark:focus:bg-slate-900"
+    />
+  </div>
+
+  <!-- Project view tabs -->
+  <div role="tablist" aria-label="Workspace panels" class="flex items-stretch gap-0.5 overflow-x-auto">
+    {
+      tabs.map((tab, i) => (
+        <button
+          type="button"
+          role="tab"
+          id={`tab-${tab.id}`}
+          data-tab={tab.id}
+          aria-selected={i === 0 ? "true" : "false"}
+          aria-controls={`tab-panel-${tab.id}`}
+          class="inline-flex items-center gap-1 whitespace-nowrap border-b-2 border-transparent px-2.5 text-xs font-semibold tracking-tight text-slate-500 transition-colors"
+        >
+          <span aria-hidden="true">{tab.icon}</span>
+          {tab.label}
+        </button>
+      ))
+    }
+  </div>
+
+  <!-- Right: sync pulse -->
+  <span
+    id="sync-status"
+    class="ml-auto hidden self-center text-[10px] font-medium text-emerald-600 opacity-0 transition-opacity md:block dark:text-emerald-400"
+    aria-hidden="true"></span>
+</div>

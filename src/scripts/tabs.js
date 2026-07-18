@@ -28,6 +28,12 @@ export function setActiveTab(name) {
       panel.classList.toggle("hidden", !on);
       panel.classList.toggle("flex", on);
     }
+    // AREA 5 — the persistent context pane routes its content per view
+    const context = document.getElementById(`context-${tab}`);
+    if (context) {
+      context.classList.toggle("hidden", !on);
+      context.classList.toggle("flex", on);
+    }
   }
   try {
     sessionStorage.setItem(LS_TAB, name);

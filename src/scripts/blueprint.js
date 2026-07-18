@@ -344,8 +344,19 @@ const TAG_BADGES = {
 
 function taskCard(task, track, idx) {
   const card = document.createElement("li");
-  card.className =
-    "group rounded-lg border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-950";
+  card.dataset.taskId = task.id;
+  const isSelected = selectedTask?.id === task.id;
+  card.className = `group cursor-pointer rounded-lg border p-3 shadow-sm transition ${
+    isSelected
+      ? "border-indigo-400 bg-indigo-50/60 dark:border-indigo-600 dark:bg-indigo-950/40"
+      : "border-slate-200 bg-white hover:border-indigo-300 dark:border-slate-800 dark:bg-slate-950 dark:hover:border-indigo-700"
+  }`;
+  // AREA 5 task drawer: clicking the card (not its inline controls) routes
+  // the context pane to this task's breakdown.
+  card.addEventListener("click", (e) => {
+    if (e.target.closest("button") || e.target.closest("textarea")) return;
+    selectTask(track, idx);
+  });
 
   const top = document.createElement("div");
   top.className = "flex items-start justify-between gap-2";
@@ -413,6 +424,90 @@ function taskCard(task, track, idx) {
   return card;
 }
 
+/* ================================================================ */
+/* AREA 5 — TASK DETAILS DRAWER (Requirement Engine context pane)    */
+/* ================================================================ */
+
+let selectedTask = null; // { id, track, idx }
+
+function selectTask(track, idx) {
+  const task = getState().r.tasks[track]?.[idx];
+  if (!task) return;
+  selectedTask = { id: task.id, track, idx };
+  renderTaskDetail();
+  renderBlueprintGrid(); // repaint selection highlight
+}
+
+function clearTaskSelection() {
+  selectedTask = null;
+  renderTaskDetail();
+}
+
+function renderTaskDetail() {
+  const empty = $("#task-detail-empty");
+  const detail = $("#task-detail");
+  if (!empty || !detail) return;
+  const task = selectedTask ? getState().r.tasks[selectedTask.track]?.[selectedTask.idx] : null;
+  if (!task || task.id !== selectedTask.id) {
+    selectedTask = null;
+    empty.classList.remove("hidden");
+    detail.classList.add("hidden");
+    detail.classList.remove("flex");
+    return;
+  }
+  empty.classList.add("hidden");
+  detail.classList.remove("hidden");
+  detail.classList.add("flex");
+
+  const tag = task.tag ?? "eng";
+  const tagEl = $("#task-detail-tag");
+  tagEl.textContent = tagLabel(tag);
+  tagEl.className = `rounded-full px-2 py-0.5 text-[10px] font-semibold ${TAG_BADGES[tag]}`;
+  $("#task-detail-track").textContent =
+    selectedTask.track === "core" ? "Core Engineering" : "Cross-Functional Extension";
+  const area = $("#task-detail-text");
+  if (area.value !== task.t) area.value = task.t;
+}
+
+function initTaskDrawer() {
+  $("#task-detail-text")?.addEventListener("input", (e) => {
+    if (!selectedTask) return;
+    const { track, idx, id } = selectedTask;
+    update((d) => {
+      const target = d.r.tasks[track]?.[idx];
+      if (target?.id === id) target.t = e.target.value;
+    });
+    // Live-sync the visible card without a full re-render (keeps focus)
+    document.querySelector(`[data-task-id="${id}"] p`)?.replaceChildren(
+      document.createTextNode(e.target.value),
+    );
+    refreshDrawerPreview();
+  });
+  $("#task-copy-md")?.addEventListener("click", async () => {
+    if (!selectedTask) return;
+    const task = getState().r.tasks[selectedTask.track]?.[selectedTask.idx];
+    if (!task) return;
+    const [head, ...rest] = task.t.split("\n");
+    const md = [`- [ ] ${head}`, ...rest.map((l) => `  - ${l}`)].join("\n");
+    try {
+      await navigator.clipboard.writeText(md);
+      toast("Task copied as a Markdown checklist item.");
+    } catch {
+      toast("Clipboard access was blocked — copy from the textarea instead.");
+    }
+  });
+  $("#task-detail-delete")?.addEventListener("click", () => {
+    if (!selectedTask) return;
+    const { track, idx, id } = selectedTask;
+    update((d) => {
+      if (d.r.tasks[track]?.[idx]?.id === id) d.r.tasks[track].splice(idx, 1);
+    });
+    clearTaskSelection();
+    renderBlueprintGrid();
+  });
+  $("#task-open-package")?.addEventListener("click", () => $("#open-drawer-btn")?.click());
+}
+
 export function renderBlueprintGrid() {
   const coreList = $("#core-task-list");
   const crossList = $("#cross-task-list");
@@ -426,6 +521,14 @@ export function renderBlueprintGrid() {
 
   coreList.replaceChildren(...tasks.core.map((t, i) => taskCard(t, "core", i)));
   crossList.replaceChildren(...tasks.cross.map((t, i) => taskCard(t, "cross", i)));
+  // Selection may point at a task that was regenerated or deleted
+  if (selectedTask && !tasks[selectedTask.track]?.some((t) => t.id === selectedTask.id)) {
+    clearTaskSelection();
+  } else if (selectedTask) {
+    // Index may have shifted after a regeneration/splice — re-anchor by id
+    selectedTask.idx = tasks[selectedTask.track].findIndex((t) => t.id === selectedTask.id);
+    renderTaskDetail();
+  }
   refreshDrawerPreview();
 }
 
@@ -515,5 +618,6 @@ export function refreshBlueprintUi() {
 export function initBlueprint() {
   initControls();
   initDrawer();
+  initTaskDrawer();
   refreshBlueprintUi();
 }
