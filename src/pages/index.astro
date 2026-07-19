@@ -17,40 +17,10 @@ import GovernancePanel from "../components/GovernancePanel.astro";
 import ResourceOverlay from "../components/ResourceOverlay.astro";
 import TokenManager from "../components/TokenManager.astro";
 import OnboardingStep from "../components/OnboardingStep.astro";
-import PublicLanding from "../components/PublicLanding.astro";
+import OutcomePreview from "../components/OutcomePreview.astro";
 ---
 
 <BaseLayout>
-  {/* View splitter: decide landing vs. app BEFORE the body paints so exactly
-      one view is ever shown. Reads hash + localStorage only — never writes. */}
-  <script is:inline>
-    (() => {
-      let active = false;
-      try {
-        const h = location.hash.slice(1);
-        if (h.startsWith("w1:") || h.startsWith("w0:")) active = true;
-        if (!active) {
-          for (let i = 0; i < localStorage.length; i += 1) {
-            const k = localStorage.key(i);
-            if (
-              k &&
-              (k.indexOf("vibsio:workspaces") === 0 ||
-                k === "vibsio:session:current" ||
-                k === "vibsio:auth:session")
-            ) {
-              active = true;
-              break;
-            }
-          }
-        }
-      } catch (_) {
-        /* storage blocked — default to the landing */
-      }
-      document.documentElement.classList.add(active ? "mode-app" : "mode-landing");
-    })();
-  </script>
-
-  <PublicLanding />
 
   <!-- ======================= 5-PANE ENTERPRISE SHELL =======================
        AREA 3 top bar · AREA 1 sidebar · AREA 2 header · AREA 4 main pane ·
@@ -82,6 +52,9 @@ import PublicLanding from "../components/PublicLanding.astro";
             aria-labelledby="tab-blueprint"
             class="flex flex-col gap-3"
           >
+            <!-- Step 0: outcome preview for fresh workspaces -->
+            <OutcomePreview />
+
             <!-- Project Objective: the first thing a PM sees on any blueprint -->
             <section
               aria-labelledby="objective-heading"

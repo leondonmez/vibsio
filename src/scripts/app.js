@@ -76,32 +76,40 @@ function initTheme() {
 }
 
 /* ================================================================ */
-/* VIEW SPLITTER — public landing ⇄ workspace cockpit                */
+/* STEP 0 — in-sandbox outcome preview (fresh workspaces only)       */
 /* ================================================================ */
 
-function revealWorkspace() {
-  const root = document.documentElement;
-  if (!root.classList.contains("mode-landing")) return; // already in the app
-  const landing = document.getElementById("public-landing");
-  // `.revealing` keeps the landing painted while mode-app takes over, so the
-  // fade/slide-up animates cleanly before it is finally display:none'd.
-  root.classList.add("revealing");
-  root.classList.remove("mode-landing");
-  root.classList.add("mode-app");
-  // Story textareas measured 0 under the landing overlay — resize now visible.
-  requestAnimationFrame(autosizeStories);
-  if (landing) {
-    requestAnimationFrame(() => landing.classList.add("landing-leaving"));
-    const done = () => root.classList.remove("revealing");
-    landing.addEventListener("transitionend", done, { once: true });
-    setTimeout(done, 700);
-  } else {
-    root.classList.remove("revealing");
+function initStep0() {
+  const card = $("#step0-card");
+  if (!card) return;
+  let dismissed = false;
+  try {
+    dismissed = localStorage.getItem("vibs_step0_dismissed") === "1";
+  } catch {
+    dismissed = true; // storage blocked — never nag
   }
-}
+  const s = getState();
+  const hasData =
+    s.p.title || s.items.length > 0 || s.f.hist.length > 0 || s.r.epic || s.r.tasks.core.length > 0;
+  if (!dismissed && !hasData) card.classList.remove("hidden");
 
-function inAppMode() {
-  return document.documentElement.classList.contains("mode-app");
+  const dismiss = () => {
+    try {
+      localStorage.setItem("vibs_step0_dismissed", "1");
+    } catch {
+      /* noop */
+    }
+    card.classList.add("hidden");
+  };
+  $("#step0-dismiss")?.addEventListener("click", dismiss);
+  $("#step0-start")?.addEventListener("click", () => {
+    dismiss();
+    $("#p-title")?.focus();
+  });
+  $("#step0-demo")?.addEventListener("click", async () => {
+    dismiss();
+    (await import("../utils/demoLoader.js")).launchDemo();
+  });
 }
 
 /* Re-measure every story textarea. Story fields live in a tab that is
@@ -589,30 +597,12 @@ async function boot() {
   if (source === "recovered") {
     toast("Previous session recovered from this browser — no account needed.");
   }
-  // Only persist an empty fresh workspace once the user has actually entered
-  // the app; anonymous visitors sitting on the landing leave no trace.
-  if (source === "fresh" && inAppMode()) {
+  if (source === "fresh") {
     await syncNow();
   }
 
-  // Branding logo → root reset: strip the hash and reload so the view
-  // splitter re-evaluates and shows the landing (empty hash === landing).
-  $("#brand-logo")?.addEventListener("click", (e) => {
-    e.preventDefault();
-    history.replaceState(null, "", location.pathname + location.search);
-    location.reload();
-  });
-
-  // Public landing CTAs hand off to the workspace.
-  $("#landing-open-sandbox")?.addEventListener("click", async () => {
-    revealWorkspace();
-    await syncNow(); // persist the empty workspace so a reload stays in-app
-    $("#session-name")?.focus();
-  });
-  $("#landing-demo")?.addEventListener("click", async () => {
-    revealWorkspace();
-    (await import("../utils/demoLoader.js")).launchDemo();
-  });
+  // Step 0: in-sandbox outcome preview for fresh, empty workspaces
+  initStep0();
 
   // One-click demo engine: inject the sample enterprise workspace through
   // the URL-hash pipeline (lazy chunk — costs nothing until clicked).
@@ -675,23 +665,6 @@ async function boot() {
       }
     });
   });
-  let tourDone = true;
-  try {
-    tourDone = localStorage.getItem("vibs_onboarding_completed") === "1";
-  } catch {
-    /* storage unavailable — never nag */
-  }
-  // Auto-tour only for a fresh visitor who is already inside the app — a
-  // landing visitor hasn't entered yet, so it must not fire over the overlay.
-  if (source === "fresh" && !tourDone && inAppMode()) {
-    const kick = () =>
-      setTimeout(async () => {
-        (await loadTour()).startTour();
-      }, 400);
-    if ("requestIdleCallback" in window) requestIdleCallback(kick, { timeout: 1500 });
-    else setTimeout(kick, 600);
-  }
-
   // Pasting a different share-link hash rehydrates the workspace live.
   window.addEventListener("hashchange", async () => {
     const next = await deserializePayload(location.hash.slice(1));

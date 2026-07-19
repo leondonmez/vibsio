@@ -1,0 +1,68 @@
+---
+/**
+ * STEP 0 — in-sandbox outcome preview.
+ * Compact hook card at the top of the default Scope & Requirements view.
+ * Shown only for fresh, empty workspaces; dismissed permanently on Start /
+ * demo / ✕ (flag: vibs_step0_dismissed). Wired in app.js (initStep0).
+ */
+const pillars = [
+  { icon: "📊", title: "Monte Carlo Forecasts", body: "Predict realistic ship dates using your team's real sprint velocity and variable scope creep." },
+  { icon: "📋", title: "Instant Ticket Drafting", body: "Decompose messy, high-level epics into clear, tech-stack specific engineering subtasks." },
+  { icon: "🔒", title: "100% Free & Local", body: "Zero logins, zero corporate database footprint. Everything executes securely right inside your browser URL." },
+];
+---
+
+<section
+  id="step0-card"
+  aria-labelledby="step0-heading"
+  class="relative hidden space-y-4 rounded-xl border border-indigo-200 bg-gradient-to-b from-indigo-50/70 to-white p-4 shadow-sm sm:p-5 dark:border-indigo-900 dark:from-indigo-950/40 dark:to-slate-900"
+>
+  <button
+    id="step0-dismiss"
+    type="button"
+    aria-label="Dismiss this introduction"
+    class="absolute right-2.5 top-2.5 rounded-md p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
+  >
+    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+    </svg>
+  </button>
+
+  <h2 id="step0-heading" class="pr-8 text-lg font-bold leading-snug tracking-tight text-slate-900 sm:text-xl dark:text-slate-50">
+    Leadership wants a ship date. Engineering wants broken-down tickets.
+    <span class="text-indigo-600 dark:text-indigo-400">You are caught in the middle.</span>
+  </h2>
+  <p class="max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+    vibs.io bridges this gap in 60 seconds—turning raw, messy epics into reliable, data-backed
+    delivery forecasts and structured, stack-ready engineering drafts.
+  </p>
+
+  <div class="grid gap-2.5 lg:grid-cols-3">
+    {
+      pillars.map((p) => (
+        <p class="rounded-lg border border-slate-200/60 bg-white/80 p-2.5 text-xs leading-relaxed text-slate-600 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-400">
+          <span aria-hidden="true">{p.icon}</span>
+          <strong class="font-semibold text-slate-900 dark:text-slate-100"> {p.title}</strong>: {p.body}
+        </p>
+      ))
+    }
+  </div>
+
+  <div class="flex flex-wrap items-center gap-2">
+    <button
+      id="step0-start"
+      type="button"
+      class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-indigo-500"
+    >
+      Start Project Model ➔
+    </button>
+    <button
+      id="step0-demo"
+      type="button"
+      class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+    >
+      Load Sample Data
+    </button>
+    <span class="text-[11px] text-slate-400 dark:text-slate-500">No account. No install. Data never leaves your browser.</span>
+  </div>
+</section>
