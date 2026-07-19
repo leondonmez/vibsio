@@ -36,6 +36,14 @@ export function setActiveTab(name) {
       context.classList.toggle("flex", on);
     }
   }
+  // Views without context content (e.g. single-column Scope & Requirements)
+  // collapse the right pane and hand its track back to the main canvas.
+  const pane = document.getElementById("context-pane");
+  const columns = document.getElementById("app-columns");
+  const hasContext = !!document.getElementById(`context-${name}`);
+  pane?.classList.toggle("hidden", !hasContext);
+  columns?.classList.toggle("lg:grid-cols-[15rem_minmax(0,1fr)_minmax(0,40%)]", hasContext);
+  columns?.classList.toggle("lg:grid-cols-[15rem_minmax(0,1fr)]", !hasContext);
   try {
     sessionStorage.setItem(LS_TAB, name);
   } catch {

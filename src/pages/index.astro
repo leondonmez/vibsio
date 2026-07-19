@@ -32,7 +32,7 @@ import OutcomePreview from "../components/OutcomePreview.astro";
     <!-- AREA 3 -->
     <SiteHeader />
 
-    <div class="flex min-h-0 flex-1 flex-col lg:grid lg:grid-cols-[15rem_minmax(0,1fr)_minmax(0,40%)]">
+    <div id="app-columns" class="flex min-h-0 flex-1 flex-col lg:grid lg:grid-cols-[15rem_minmax(0,1fr)_minmax(0,40%)]">
       <!-- AREA 1 (last in mobile stacking order) -->
       <div class="order-3 min-h-0 lg:order-none lg:col-start-1 lg:row-start-1">
         <WorkspaceSidebar />
@@ -96,6 +96,69 @@ import OutcomePreview from "../components/OutcomePreview.astro";
             <RequirementHub />
             <GenerationTerminal />
             <BlueprintGrid />
+
+            <!-- Task Details (single-column flow, below the matrix) -->
+            <section class="rounded-xl border border-slate-200/60 bg-white p-3.5 shadow-sm sm:p-4 dark:border-slate-800 dark:bg-slate-900">
+              <h2 class="mb-1 text-sm font-medium tracking-tight text-slate-900 dark:text-slate-100">
+                Task Details
+              </h2>
+              <p id="task-detail-empty" class="rounded-lg border border-dashed border-slate-300 px-4 py-6 text-center text-xs leading-relaxed text-slate-400 dark:border-slate-700 dark:text-slate-500">
+                Select any task card in the Blueprint Matrix to inspect and
+                polish its engineering breakdown here.
+              </p>
+
+              <div id="task-detail" class="hidden flex-col gap-3">
+                <div class="flex items-center gap-2">
+                  <span id="task-detail-tag" class="rounded-full px-2 py-0.5 text-[10px] font-semibold"></span>
+                  <span id="task-detail-track" class="text-[10px] font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500"></span>
+                </div>
+                <div>
+                  <label for="task-detail-text" class="mb-1 block text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                    Subtask breakdown (title + acceptance criteria)
+                  </label>
+                  <textarea
+                    id="task-detail-text"
+                    rows="6"
+                    maxlength="600"
+                    class="w-full resize-y rounded-lg border border-slate-300 bg-white px-2.5 py-2 text-sm leading-relaxed dark:border-slate-700 dark:bg-slate-950"
+                  ></textarea>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  <button
+                    id="task-copy-md"
+                    type="button"
+                    class="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-500"
+                  >
+                    Copy task as Markdown
+                  </button>
+                  <button
+                    id="task-detail-delete"
+                    type="button"
+                    class="rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-medium text-rose-600 transition hover:bg-rose-50 dark:border-rose-900 dark:text-rose-400 dark:hover:bg-rose-950"
+                  >
+                    Delete task
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <!-- Clipboard Packages -->
+            <section class="rounded-xl border border-slate-200/60 bg-white p-3.5 shadow-sm sm:p-4 dark:border-slate-800 dark:bg-slate-900">
+              <h2 class="mb-1 text-sm font-medium tracking-tight text-slate-900 dark:text-slate-100">
+                Clipboard Packages
+              </h2>
+              <p class="mb-2.5 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+                Compile the full task matrix into Universal Markdown or a
+                structured JSON array for Jira, Linear, Asana, or Azure DevOps.
+              </p>
+              <button
+                id="task-open-package"
+                type="button"
+                class="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+              >
+                ⇪ Open Package Drawer
+              </button>
+            </section>
           </div>
 
           <!-- VIEW 2 — Quantitative Forecaster: history left, config right -->
@@ -221,70 +284,6 @@ import OutcomePreview from "../components/OutcomePreview.astro";
              its data-input tables -->
         <div id="context-quant" class="hidden flex-col gap-3 p-3">
           <BurnupChart />
-        </div>
-
-        <!-- Scope & Requirements context (default): sliding task drawer -->
-        <div id="context-blueprint" class="flex flex-col gap-3 p-3">
-          <section class="rounded-xl border border-slate-200/60 bg-white p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <h2 class="mb-1 text-sm font-medium tracking-tight text-slate-900 dark:text-slate-100">
-              Task Details
-            </h2>
-            <p id="task-detail-empty" class="rounded-lg border border-dashed border-slate-300 px-4 py-6 text-center text-xs leading-relaxed text-slate-400 dark:border-slate-700 dark:text-slate-500">
-              Select any task card in the Blueprint Matrix to inspect and
-              polish its engineering breakdown here.
-            </p>
-
-            <div id="task-detail" class="hidden flex-col gap-3">
-              <div class="flex items-center gap-2">
-                <span id="task-detail-tag" class="rounded-full px-2 py-0.5 text-[10px] font-semibold"></span>
-                <span id="task-detail-track" class="text-[10px] font-medium uppercase tracking-wide text-slate-400 dark:text-slate-500"></span>
-              </div>
-              <div>
-                <label for="task-detail-text" class="mb-1 block text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                  Subtask breakdown (title + acceptance criteria)
-                </label>
-                <textarea
-                  id="task-detail-text"
-                  rows="6"
-                  maxlength="600"
-                  class="w-full resize-y rounded-lg border border-slate-300 bg-white px-2.5 py-2 text-sm leading-relaxed dark:border-slate-700 dark:bg-slate-950"
-                ></textarea>
-              </div>
-              <div class="flex flex-wrap gap-2">
-                <button
-                  id="task-copy-md"
-                  type="button"
-                  class="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-indigo-500"
-                >
-                  Copy task as Markdown
-                </button>
-                <button
-                  id="task-detail-delete"
-                  type="button"
-                  class="rounded-lg border border-rose-200 px-3 py-1.5 text-xs font-medium text-rose-600 transition hover:bg-rose-50 dark:border-rose-900 dark:text-rose-400 dark:hover:bg-rose-950"
-                >
-                  Delete task
-                </button>
-              </div>
-            </div>
-          </section>
-
-          <section class="rounded-xl border border-slate-200/60 bg-white p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <h2 class="mb-1 text-sm font-medium tracking-tight text-slate-900 dark:text-slate-100">
-              Clipboard Packages
-            </h2>
-            <p class="mb-2.5 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-              Compile the full task matrix into Universal Markdown or a
-              structured JSON array for Jira, Linear, Asana, or Azure DevOps.
-            </p>
-            <button
-              id="task-open-package"
-              type="button"
-              class="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
-            >
-              ⇪ Open Package Drawer
-            </button>
-          </section>
         </div>
 
         <!-- Backlog context: metrics + governance -->

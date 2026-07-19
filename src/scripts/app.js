@@ -80,33 +80,9 @@ function initTheme() {
 /* ================================================================ */
 
 function initStep0() {
-  const card = $("#step0-card");
-  if (!card) return;
-  // Visible for everyone until EXPLICITLY dismissed (✕ or Start) — never
-  // auto-hidden by workspace state.
-  let dismissed = false;
-  try {
-    dismissed = localStorage.getItem("vibs_step0_dismissed") === "1";
-  } catch {
-    /* storage blocked — still show it */
-  }
-  if (!dismissed) card.classList.remove("hidden");
-
-  const dismiss = () => {
-    try {
-      localStorage.setItem("vibs_step0_dismissed", "1");
-    } catch {
-      /* noop */
-    }
-    card.classList.add("hidden");
-  };
-  $("#step0-dismiss")?.addEventListener("click", dismiss);
-  $("#step0-start")?.addEventListener("click", () => {
-    dismiss();
-    $("#p-title")?.focus();
-  });
+  // The Step-0 card is permanent — always visible, never dismissible.
+  $("#step0-start")?.addEventListener("click", () => $("#p-title")?.focus());
   $("#step0-demo")?.addEventListener("click", async () => {
-    dismiss();
     (await import("../utils/demoLoader.js")).launchDemo();
   });
 }
