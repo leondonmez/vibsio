@@ -82,16 +82,15 @@ function initTheme() {
 function initStep0() {
   const card = $("#step0-card");
   if (!card) return;
+  // Visible for everyone until EXPLICITLY dismissed (✕ or Start) — never
+  // auto-hidden by workspace state.
   let dismissed = false;
   try {
     dismissed = localStorage.getItem("vibs_step0_dismissed") === "1";
   } catch {
-    dismissed = true; // storage blocked — never nag
+    /* storage blocked — still show it */
   }
-  const s = getState();
-  const hasData =
-    s.p.title || s.items.length > 0 || s.f.hist.length > 0 || s.r.epic || s.r.tasks.core.length > 0;
-  if (!dismissed && !hasData) card.classList.remove("hidden");
+  if (!dismissed) card.classList.remove("hidden");
 
   const dismiss = () => {
     try {
