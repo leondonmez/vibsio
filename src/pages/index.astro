@@ -40,6 +40,9 @@ import OutcomePreview from "../components/OutcomePreview.astro";
 
       <!-- Central column: AREA 2 + AREA 4 -->
       <div class="order-1 flex min-h-0 min-w-0 flex-col lg:order-none lg:col-start-2 lg:row-start-1">
+        <!-- Step 0: permanent intro bar, above the workspace header -->
+        <OutcomePreview />
+
         <!-- AREA 2 -->
         <WorkspaceHeader />
 
@@ -52,9 +55,6 @@ import OutcomePreview from "../components/OutcomePreview.astro";
             aria-labelledby="tab-blueprint"
             class="flex flex-col gap-3"
           >
-            <!-- Step 0: outcome preview for fresh workspaces -->
-            <OutcomePreview />
-
             <!-- Project Objective: the first thing a PM sees on any blueprint -->
             <section
               aria-labelledby="objective-heading"
