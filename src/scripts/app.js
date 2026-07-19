@@ -647,8 +647,10 @@ async function boot() {
     $("#new-blueprint-btn")?.click();
   });
   $("#demo-launch-btn")?.addEventListener("click", closeCreate);
-  // Settings gear → the Integrations & Token Manager drawer
+  // Settings gear + Backlog-context export cards → the shared drawers
   $("#settings-btn")?.addEventListener("click", () => $("#open-token-manager")?.click());
+  $("#admin-open-package")?.addEventListener("click", () => $("#open-drawer-btn")?.click());
+  $("#admin-open-publish")?.addEventListener("click", () => $("#open-token-manager")?.click());
   // Global search filters the sidebar workspace tree live
   $("#global-search")?.addEventListener("input", (e) => {
     const q = e.target.value.trim().toLowerCase();
@@ -658,7 +660,7 @@ async function boot() {
   });
 
   // ---- AREA 1 sidebar navigation hub ----
-  const NAV_ROUTES = { home: "quant", insights: "quant", trees: "admin" };
+  const NAV_ROUTES = { home: "blueprint", insights: "quant", trees: "admin" };
   document.querySelectorAll("[data-nav]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const key = btn.dataset.nav;

@@ -6,7 +6,8 @@
  * deliberately NOT part of the shareable hash state.
  */
 
-const TABS = ["quant", "blueprint", "admin"];
+// Chronological PM sequence — blueprint (Scope & Requirements) is the default
+const TABS = ["blueprint", "quant", "admin"];
 const LS_TAB = "vibsio:tab";
 
 const ACTIVE = ["border-indigo-600", "text-indigo-700", "dark:border-indigo-400", "dark:text-indigo-300"];
@@ -46,7 +47,7 @@ export function setActiveTab(name) {
 }
 
 export function getActiveTab() {
-  return TABS.find((t) => document.getElementById(`tab-${t}`)?.getAttribute("aria-selected") === "true") ?? "quant";
+  return TABS.find((t) => document.getElementById(`tab-${t}`)?.getAttribute("aria-selected") === "true") ?? "blueprint";
 }
 
 export function initTabs() {
@@ -69,5 +70,5 @@ export function initTabs() {
   } catch {
     /* noop */
   }
-  setActiveTab(TABS.includes(saved) ? saved : "quant");
+  setActiveTab(TABS.includes(saved) ? saved : "blueprint");
 }

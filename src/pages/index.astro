@@ -75,27 +75,68 @@ import PublicLanding from "../components/PublicLanding.astro";
 
         <!-- AREA 4 — main pane canvas (isolated internal scrolling) -->
         <main id="main" class="min-h-0 flex-1 p-3 lg:overflow-y-auto">
-          <!-- Quantitative Sandbox -->
-          <div
-            id="tab-panel-quant"
-            role="tabpanel"
-            aria-labelledby="tab-quant"
-            class="flex flex-col gap-3"
-          >
-            <VelocityGrid />
-            <ResourceOverlay />
-          </div>
-
-          <!-- Requirement Engine -->
+          <!-- VIEW 1 (default) — Scope & Requirements: the primary studio -->
           <div
             id="tab-panel-blueprint"
             role="tabpanel"
             aria-labelledby="tab-blueprint"
-            class="hidden flex-col gap-3"
+            class="flex flex-col gap-3"
           >
+            <!-- Project Objective: the first thing a PM sees on any blueprint -->
+            <section
+              aria-labelledby="objective-heading"
+              class="rounded-xl border border-slate-200/60 bg-white p-3.5 shadow-sm sm:p-4 dark:border-slate-800 dark:bg-slate-900"
+            >
+              <h2 id="objective-heading" class="mb-2.5 text-sm font-medium tracking-tight text-slate-900 dark:text-slate-100">
+                Project Objective
+              </h2>
+              <div class="flex flex-col gap-3">
+                <div>
+                  <label for="p-title" class="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">
+                    Project Title
+                  </label>
+                  <input
+                    id="p-title"
+                    data-bind="p.title"
+                    type="text"
+                    maxlength="200"
+                    placeholder="What are we delivering?"
+                    class="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-sm dark:border-slate-700 dark:bg-slate-950"
+                  />
+                </div>
+                <div>
+                  <label for="p-objective" class="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">
+                    Business Goal &amp; Scope
+                  </label>
+                  <textarea
+                    id="p-objective"
+                    data-bind="p.objective"
+                    rows="2"
+                    maxlength="2000"
+                    placeholder="What are we delivering and what makes it a win?"
+                    class="w-full resize-y rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-sm dark:border-slate-700 dark:bg-slate-950"
+                  ></textarea>
+                </div>
+              </div>
+            </section>
+
             <RequirementHub />
             <GenerationTerminal />
             <BlueprintGrid />
+          </div>
+
+          <!-- VIEW 2 — Quantitative Forecaster: history left, config right -->
+          <div
+            id="tab-panel-quant"
+            role="tabpanel"
+            aria-labelledby="tab-quant"
+            class="hidden flex-col gap-3"
+          >
+            <div class="grid grid-cols-1 gap-3 lg:grid-cols-2 lg:items-start">
+              <VelocityGrid />
+              <ForecastControls />
+            </div>
+            <ResourceOverlay />
           </div>
 
           <!-- Backlog & Metadata -->
@@ -105,41 +146,15 @@ import PublicLanding from "../components/PublicLanding.astro";
             aria-labelledby="tab-admin"
             class="hidden flex-col gap-3"
           >
-            <!-- Project blueprint fields -->
+            <!-- Delivery metadata (title/objective live in Scope view) -->
             <section
               aria-labelledby="blueprint-heading"
               class="rounded-xl border border-slate-200/60 bg-white p-3.5 shadow-sm sm:p-4 dark:border-slate-800 dark:bg-slate-900"
             >
               <h2 id="blueprint-heading" class="mb-2.5 text-sm font-medium tracking-tight text-slate-900 dark:text-slate-100">
-                Project Blueprint
+                Delivery Metadata
               </h2>
               <div class="grid gap-3 sm:grid-cols-2">
-                <div class="sm:col-span-2">
-                  <label for="p-title" class="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">
-                    Project Title
-                  </label>
-                  <input
-                    id="p-title"
-                    data-bind="p.title"
-                    type="text"
-                    maxlength="200"
-                    placeholder="What are we building?"
-                    class="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-sm dark:border-slate-700 dark:bg-slate-950"
-                  />
-                </div>
-                <div class="sm:col-span-2">
-                  <label for="p-objective" class="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">
-                    Objective
-                  </label>
-                  <textarea
-                    id="p-objective"
-                    data-bind="p.objective"
-                    rows="2"
-                    maxlength="2000"
-                    placeholder="The outcome that makes this project a win…"
-                    class="w-full resize-y rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-sm dark:border-slate-700 dark:bg-slate-950"
-                  ></textarea>
-                </div>
                 <div>
                   <label for="p-start" class="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400">
                     <span data-term="cycle">Sprint</span> Start Date
@@ -229,14 +244,14 @@ import PublicLanding from "../components/PublicLanding.astro";
         aria-label="Context details"
         class="order-2 min-h-0 border-slate-200/60 bg-white lg:order-none lg:col-start-3 lg:row-start-1 lg:h-full lg:overflow-y-auto lg:border-l dark:border-slate-800 dark:bg-slate-900/40"
       >
-        <!-- Sandbox context: the math payoff, permanently pinned -->
-        <div id="context-quant" class="flex flex-col gap-3 p-3">
+        <!-- Forecaster context: the Monte Carlo chart, pinned parallel to
+             its data-input tables -->
+        <div id="context-quant" class="hidden flex-col gap-3 p-3">
           <BurnupChart />
-          <ForecastControls />
         </div>
 
-        <!-- Requirement context: sliding task drawer -->
-        <div id="context-blueprint" class="hidden flex-col gap-3 p-3">
+        <!-- Scope & Requirements context (default): sliding task drawer -->
+        <div id="context-blueprint" class="flex flex-col gap-3 p-3">
           <section class="rounded-xl border border-slate-200/60 bg-white p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
             <h2 class="mb-1 text-sm font-medium tracking-tight text-slate-900 dark:text-slate-100">
               Task Details
@@ -321,6 +336,34 @@ import PublicLanding from "../components/PublicLanding.astro";
               <p id="metric-done" class="mt-0.5 text-xl font-bold tracking-tight">0%</p>
             </div>
           </section>
+
+          <!-- Markdown packages + direct API export configurations -->
+          <section class="rounded-xl border border-slate-200/60 bg-white p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <h2 class="mb-1 text-sm font-medium tracking-tight text-slate-900 dark:text-slate-100">
+              Packages &amp; Export
+            </h2>
+            <p class="mb-2.5 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+              Compile the backlog into Universal Markdown / JSON arrays, or
+              configure tokens and publish straight to a live board.
+            </p>
+            <div class="flex flex-col gap-2">
+              <button
+                id="admin-open-package"
+                type="button"
+                class="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+              >
+                ⇪ Markdown / JSON Package Drawer
+              </button>
+              <button
+                id="admin-open-publish"
+                type="button"
+                class="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+              >
+                🚀 API Export & Token Configuration
+              </button>
+            </div>
+          </section>
+
           <GovernancePanel />
         </div>
       </aside>
